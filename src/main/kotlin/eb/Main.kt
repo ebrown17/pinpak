@@ -49,7 +49,20 @@ fun main() {
 
     pipeline.remove("Now 1")
     println(pipeline)
+
+    pipeline.removeFirst()
+    println(pipeline)
+
+    pipeline.removeLast()
+    println(pipeline)
+
+    pipeline.replace("3 Add", "NEW ADD 3", Interceptor())
+    println(pipeline)
+
     pipeline.removeAll()
+    println(pipeline)
+
+    pipeline.removeLast()
     println(pipeline)
 
 }
@@ -90,42 +103,59 @@ class PipeLine {
     }
 
     private fun addAfter(current: InterceptorContext, newName: String, interceptor: Interceptor) {
-        val newCtx = InterceptorContext(newName)
+        val newCtx =  bindNewContext(newName,interceptor)
         val after = current.next
         newCtx.next = after
         newCtx.previous = current
         after.previous = newCtx
         current.next = newCtx
-        interceptor.ctx = newCtx
-        newCtx.interceptor = interceptor
     }
 
     private fun addBefore(current: InterceptorContext, newName: String, interceptor: Interceptor) {
-        val newCtx = InterceptorContext(newName)
+        val newCtx = bindNewContext(newName,interceptor)
         val front = current.previous
         newCtx.previous = front
         newCtx.next = current
         front.next = newCtx
         current.previous = newCtx
-        interceptor.ctx = newCtx
-        newCtx.interceptor = interceptor
+
     }
 
     fun remove(name: String) {
         try {
             val context = getContext(name)
-            val front = context.previous
-            val back = context.next
-            front.next=back
-            back.previous=front
+            if (context != tail && context != head) {
+                val front = context.previous
+                val back = context.next
+                front.next = back
+                back.previous = front
 
-            context.next=context
-            context.previous=context
+                context.next = context
+                context.previous = context
+            }
 
         } catch (e: Exception) {
             logger.warn("{}", e.message)
         }
     }
+
+    fun remove(context: InterceptorContext) {
+        if (context != tail && context != head) {
+            try {
+                val front = context.previous
+                val back = context.next
+                front.next = back
+                back.previous = front
+
+                context.next = context
+                context.previous = context
+
+            } catch (e: Exception) {
+                logger.warn("{}", e.message)
+            }
+        }
+    }
+
 
     fun removeAll() {
         while (head.next !== tail) {
@@ -135,8 +165,50 @@ class PipeLine {
         tail.previous = head
     }
 
+    fun removeFirst() {
+        remove(head.next)
+    }
+
+    fun removeLast() {
+        remove(tail.previous)
+    }
+
+    fun replace(replaced: String, newName: String, interceptor: Interceptor) {
+        val context = getContext(replaced)
+        replace(context, newName, interceptor)
+    }
+
+    fun replace(replaced: InterceptorContext, newName: String, interceptor: Interceptor) {
+        var context = head.next
+        while (context !== tail) {
+            if (context.id == replaced.id) {
+                break
+            }
+            context = context.next
+        }
+        if (replaced != tail && replaced != head) {
+            val front = context.previous
+            val back = context.next
+
+            val newCtx = bindNewContext(newName,interceptor)
+
+            newCtx.previous = front
+            newCtx.next = back
+
+            front.next = newCtx
+            back.previous = newCtx
+
+            context.next = context
+            context.previous = context
+
+        }
+    }
+
+
+
+
     private fun getContext(name: String): InterceptorContext {
-        var context = head.previous
+        var context = head.next
         while (context !== tail) {
             if (context.id == name) {
                 break
@@ -151,6 +223,14 @@ class PipeLine {
 
     // fun checkDuplicate()
 
+    private fun bindNewContext(name: String, interceptor: Interceptor): InterceptorContext {
+        // check duplicates
+        val ctx = InterceptorContext(name)
+        interceptor.ctx = ctx
+        ctx.interceptor=interceptor
+
+        return  ctx
+    }
 
     override fun toString(): String {
         var context = head.next
@@ -163,6 +243,7 @@ class PipeLine {
     }
 
 }
+
 
 class Interceptor {
     var ctx: InterceptorContext? = null
