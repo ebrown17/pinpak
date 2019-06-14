@@ -10,11 +10,17 @@ fun main() {
 
     val pipeline = PipeLine()
 
-    pipeline.addLast("1 Add", Interceptor())
-    pipeline.addLast("1 Add", Interceptor())
-    pipeline.addLast("2 Add", Interceptor())
-    pipeline.addLast("3 Add", Interceptor())
+    pipeline.addFirst("1 Add", Interceptor())
+  //  pipeline.addLast("1 Add", Interceptor())
+/*    pipeline.addLast("2 Add", Interceptor())
+    pipeline.addLast("3 Add", Interceptor())*/
     println(pipeline)
+
+    pipeline.inject("DATA")
+
+
+    Thread.sleep(5000)
+
     pipeline.addFirst("Now 2", Interceptor())
     println(pipeline)
     pipeline.addFirst("Now 1", Interceptor())
@@ -71,8 +77,8 @@ fun main() {
 
 class PipeLine {
 
-    private val head: InterceptorContext = InterceptorContext("HEAD")
-    private val tail: InterceptorContext = InterceptorContext("TAIL")
+    private val head: HeadContext = HeadContext("HeadContext")
+    private val tail: TailContext = TailContext("TailContext")
 
     init {
         head.next = tail
@@ -81,7 +87,7 @@ class PipeLine {
 
     fun addLast(name: String, interceptor: Interceptor) {
         if (!isDuplicate(name)) {
-            addAfter(tail.previous, name, interceptor)
+            addBefore(tail, name, interceptor)
         } else {
             logger.error("Duplicate Interceptor name: $name")
         }
@@ -89,7 +95,7 @@ class PipeLine {
 
     fun addFirst(name: String, interceptor: Interceptor) {
         if (!isDuplicate(name)) {
-            addBefore(head.next, name, interceptor)
+            addAfter(head, name, interceptor)
         } else {
             logger.error("Duplicate Interceptor name: $name")
         }
@@ -125,10 +131,6 @@ class PipeLine {
     }
 
     private fun addBefore(current: InterceptorContext, newName: String, interceptor: Interceptor) {
-        if (isDuplicate(newName)) {
-            throw Exception("Duplicate Interceptor name: $newName")
-        }
-
         val newCtx = bindNewContext(newName, interceptor)
         val front = current.previous
         newCtx.previous = front
@@ -239,7 +241,7 @@ class PipeLine {
     }
 
     private fun isDuplicate(name: String): Boolean {
-        var context = head
+        var context : InterceptorContext = head
         while (context != tail) {
             if (context.id == name) {
                 return true
@@ -266,23 +268,51 @@ class PipeLine {
         return "$message]"
     }
 
+    fun inject(data: String){
+        head.inject(data)
+    }
+
 }
 
 
-class Interceptor {
+open class Interceptor {
     var ctx: InterceptorContext? = null
 
+    open fun readData(context: InterceptorContext,data: String){
+        logger.info("[interceptor {}] got msg {}",context.id,data)
+        context.passOnData(data)
+    }
+
 }
 
-////Interceptor
-class InterceptorContext(val id: String) {
+class HeadContext(id: String): InterceptorContext(id){
 
-    @Volatile
+    fun inject(data: String){
+        logger.info("[ctx {}] injected msg {} at front of pipeline",id,data)
+        next.interceptor?.readData(next,data)
+    }
+}
+
+class TailContext(id: String): InterceptorContext(id){
+    override fun passOnData(data: String){
+        logger.info("[ctx {}] got msg {} at end of pipeline",id,data)
+
+    }
+}
+
+
+////Interceptor
+open class InterceptorContext(val id: String) {
+
     var previous: InterceptorContext = this
-    @Volatile
+
     var next: InterceptorContext = this
 
     var interceptor: Interceptor? = null
+
+    open fun passOnData(data: String){
+        interceptor?.readData(next,data)
+    }
 
 }
 
