@@ -1,8 +1,5 @@
 package eb
 
-import org.slf4j.LoggerFactory
-
-
 abstract class BaseContext(val name: String, val pipeline: Pipeline ){
     var next : BaseContext = this
     var previous : BaseContext = this
