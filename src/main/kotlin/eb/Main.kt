@@ -10,11 +10,11 @@ fun main() {
 
     val pipeline = Pipeline()
     println(pipeline.printAll())
-    pipeline.addFirst("1 Add", DefaultInterceptor())
+    pipeline.addFirst("1 Add", PassThroughInterceptor())
     println(pipeline.printAll())
-  //  pipeline.addLast("1 Add", DefaultInterceptor())
-   pipeline.addLast("2 Add", DefaultInterceptor())
-    pipeline.addLast("3 Add", DefaultInterceptor())
+  //  pipeline.addLast("1 Add", PassThroughInterceptor())
+   pipeline.addLast("2 Add", PassThroughInterceptor())
+    pipeline.addLast("3 Add", PassThroughInterceptor())
    println(pipeline)
 
     pipeline.inject("DATA2")
@@ -22,27 +22,27 @@ fun main() {
 
     Thread.sleep(1000)
 
-    pipeline.addFirst("Now 2", DefaultInterceptor())
+    pipeline.addFirst("Now 2", PassThroughInterceptor())
     println(pipeline)
-    pipeline.addFirst("Now 1", DefaultInterceptor())
+    pipeline.addFirst("Now 1", PassThroughInterceptor())
 
-    pipeline.addLast("6 Add", DefaultInterceptor())
+    pipeline.addLast("6 Add", PassThroughInterceptor())
     println(pipeline)
-    pipeline.addBefore("6 Add", "4 Add", DefaultInterceptor())
-    println(pipeline)
-
-    pipeline.addBefore("Now 1", "Newest 1", DefaultInterceptor())
+    pipeline.addBefore("6 Add", "4 Add", PassThroughInterceptor())
     println(pipeline)
 
-    pipeline.addAfter("4 Add", "5 Add", DefaultInterceptor())
+    pipeline.addBefore("Now 1", "Newest 1", PassThroughInterceptor())
     println(pipeline)
-    pipeline.addAfter("6 Add", "7 Add", DefaultInterceptor())
+
+    pipeline.addAfter("4 Add", "5 Add", PassThroughInterceptor())
     println(pipeline)
-    pipeline.addAfter("Newest 1", "2 Add", DefaultInterceptor())
+    pipeline.addAfter("6 Add", "7 Add", PassThroughInterceptor())
+    println(pipeline)
+    pipeline.addAfter("Newest 1", "2 Add", PassThroughInterceptor())
     println(pipeline)
 
     println("before")
-    pipeline.addBefore("Newest 1121", "2 Add", DefaultInterceptor())
+    pipeline.addBefore("Newest 1121", "2 Add", PassThroughInterceptor())
     println("after")
     println(pipeline)
 
@@ -66,7 +66,7 @@ fun main() {
     pipeline.removeLast()
     println(pipeline)
 
-    pipeline.replace("3 Add", "NEW ADD 3", DefaultInterceptor())
+    pipeline.replace("3 Add", "NEW ADD 3", PassThroughInterceptor())
     println(pipeline)
     pipeline.inject("DATA4")
 
