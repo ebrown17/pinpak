@@ -10,11 +10,11 @@ fun main() {
 
     val pipeline = Pipeline()
     println(pipeline.printAll())
-    pipeline.addFirst("1 Add", BaseInterceptor())
+    pipeline.addFirst("1 Add", DefaultInterceptor())
     println(pipeline.printAll())
-  //  pipeline.addLast("1 Add", BaseInterceptor())
-   pipeline.addLast("2 Add", BaseInterceptor())
-    pipeline.addLast("3 Add", BaseInterceptor())
+  //  pipeline.addLast("1 Add", DefaultInterceptor())
+   pipeline.addLast("2 Add", DefaultInterceptor())
+    pipeline.addLast("3 Add", DefaultInterceptor())
    println(pipeline)
 
     pipeline.inject("DATA2")
@@ -22,27 +22,27 @@ fun main() {
 
     Thread.sleep(1000)
 
-    pipeline.addFirst("Now 2", BaseInterceptor())
+    pipeline.addFirst("Now 2", DefaultInterceptor())
     println(pipeline)
-    pipeline.addFirst("Now 1", BaseInterceptor())
+    pipeline.addFirst("Now 1", DefaultInterceptor())
 
-    pipeline.addLast("6 Add", BaseInterceptor())
+    pipeline.addLast("6 Add", DefaultInterceptor())
     println(pipeline)
-    pipeline.addBefore("6 Add", "4 Add", BaseInterceptor())
-    println(pipeline)
-
-    pipeline.addBefore("Now 1", "Newest 1", BaseInterceptor())
+    pipeline.addBefore("6 Add", "4 Add", DefaultInterceptor())
     println(pipeline)
 
-    pipeline.addAfter("4 Add", "5 Add", BaseInterceptor())
+    pipeline.addBefore("Now 1", "Newest 1", DefaultInterceptor())
     println(pipeline)
-    pipeline.addAfter("6 Add", "7 Add", BaseInterceptor())
+
+    pipeline.addAfter("4 Add", "5 Add", DefaultInterceptor())
     println(pipeline)
-    pipeline.addAfter("Newest 1", "2 Add", BaseInterceptor())
+    pipeline.addAfter("6 Add", "7 Add", DefaultInterceptor())
+    println(pipeline)
+    pipeline.addAfter("Newest 1", "2 Add", DefaultInterceptor())
     println(pipeline)
 
     println("before")
-    pipeline.addBefore("Newest 1121", "2 Add", BaseInterceptor())
+    pipeline.addBefore("Newest 1121", "2 Add", DefaultInterceptor())
     println("after")
     println(pipeline)
 
@@ -66,7 +66,7 @@ fun main() {
     pipeline.removeLast()
     println(pipeline)
 
-    pipeline.replace("3 Add", "NEW ADD 3", BaseInterceptor())
+    pipeline.replace("3 Add", "NEW ADD 3", DefaultInterceptor())
     println(pipeline)
     pipeline.inject("DATA4")
 

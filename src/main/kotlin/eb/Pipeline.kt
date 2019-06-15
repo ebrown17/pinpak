@@ -156,7 +156,7 @@ class Pipeline {
 
     private fun getContext(name: String): BaseContext? {
         var context = head.next
-        while (context !== tail) {
+        while (context != tail) {
             if (context.name == name) {
                 break
             }
@@ -181,7 +181,6 @@ class Pipeline {
 
     private fun bindNewContext(name: String, interceptor: BaseInterceptor): InterceptorContext {
         val ctx = InterceptorContext(name,this,interceptor)
-        interceptor.ctx = ctx
         return ctx
     }
 
@@ -213,6 +212,10 @@ class Pipeline {
 
     fun eject(data: String){
         logger.info("pipeline ejected $data at end of pipeline")
+    }
+
+    fun getConext(): BaseContext{
+        return head
     }
 
 }
