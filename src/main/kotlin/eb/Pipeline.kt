@@ -205,12 +205,12 @@ class Pipeline {
         return "$message]"
     }
 
-    fun inject(data: String){
+    fun inject(data: Any){
         logger.info("injected $data in front of pipeline")
-        head.inject(data)
+        head.passOnData(data)
     }
 
-    fun eject(data: String){
+    fun eject(data: Any){
         logger.info("pipeline ejected $data at end of pipeline")
     }
 

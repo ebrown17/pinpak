@@ -10,11 +10,11 @@ fun main() {
 
     val pipeline = Pipeline()
     println(pipeline.printAll())
-    pipeline.addFirst("1 Add", PassThroughInterceptor())
+    pipeline.addFirst("1 Add", PassThroughStringInterceptor())
     println(pipeline.printAll())
-  //  pipeline.addLast("1 Add", PassThroughInterceptor())
-   pipeline.addLast("2 Add", PassThroughInterceptor())
-    pipeline.addLast("3 Add", PassThroughInterceptor())
+  //  pipeline.addLast("1 Add", PassThroughStringInterceptor())
+   pipeline.addLast("2 Add", PassThroughStringInterceptor())
+    pipeline.addLast("3 Add", PassThroughStringInterceptor())
    println(pipeline)
 
     pipeline.inject("DATA2")
@@ -22,27 +22,27 @@ fun main() {
 
     Thread.sleep(1000)
 
-    pipeline.addFirst("Now 2", PassThroughInterceptor())
+    pipeline.addFirst("Now 2", PassThroughStringInterceptor())
     println(pipeline)
-    pipeline.addFirst("Now 1", PassThroughInterceptor())
+    pipeline.addFirst("Now 1", PassThroughStringInterceptor())
 
-    pipeline.addLast("6 Add", PassThroughInterceptor())
+    pipeline.addLast("6 Add", PassThroughStringInterceptor())
     println(pipeline)
-    pipeline.addBefore("6 Add", "4 Add", PassThroughInterceptor())
-    println(pipeline)
-
-    pipeline.addBefore("Now 1", "Newest 1", PassThroughInterceptor())
+    pipeline.addBefore("6 Add", "4 Add", PassThroughStringInterceptor())
     println(pipeline)
 
-    pipeline.addAfter("4 Add", "5 Add", PassThroughInterceptor())
+    pipeline.addBefore("Now 1", "Newest 1", PassThroughStringInterceptor())
     println(pipeline)
-    pipeline.addAfter("6 Add", "7 Add", PassThroughInterceptor())
+
+    pipeline.addAfter("4 Add", "5 Add", PassThroughStringInterceptor())
     println(pipeline)
-    pipeline.addAfter("Newest 1", "2 Add", PassThroughInterceptor())
+    pipeline.addAfter("6 Add", "7 Add", PassThroughStringInterceptor())
+    println(pipeline)
+    pipeline.addAfter("Newest 1", "2 Add", PassThroughStringInterceptor())
     println(pipeline)
 
     println("before")
-    pipeline.addBefore("Newest 1121", "2 Add", PassThroughInterceptor())
+    pipeline.addBefore("Newest 1121", "2 Add", PassThroughStringInterceptor())
     println("after")
     println(pipeline)
 
@@ -66,9 +66,9 @@ fun main() {
     pipeline.removeLast()
     println(pipeline)
 
-    pipeline.replace("3 Add", "NEW ADD 3", PassThroughInterceptor())
+    pipeline.replace("3 Add", "NEW ADD 3", PassThroughIntegerInterceptor())
     println(pipeline)
-    pipeline.inject("DATA4")
+    pipeline.inject(10)
 
     pipeline.removeAll()
     println(pipeline)
