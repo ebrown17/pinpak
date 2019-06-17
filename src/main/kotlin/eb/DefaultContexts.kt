@@ -19,7 +19,10 @@ class HeadContext(name: String,pipeline: Pipeline): BaseContext(name,pipeline){
 }
 
 class TailContext(name: String,pipeline: Pipeline): BaseContext(name,pipeline){
-    override fun passOnData(data: Any){pipeline.eject(data)}
+
+    override fun passOnData(data: Any){
+        pipeline.eject(data)
+    }
 
     override fun passOnException(error: Throwable) {
         pipeline.eject(error)
@@ -33,6 +36,6 @@ class InterceptorContext(name: String,pipeline: Pipeline, private val intercepto
     }
 
     override fun passOnException(error: Throwable) {
-        next.passOnException(error)
+         next.passOnException(error)
     }
 }

@@ -211,7 +211,7 @@ class Pipeline {
     }
 
     fun eject(data: Any){
-        logger.info("pipeline ejected $data at end of pipeline")
+        logger.info("pipeline ejected $data")
     }
 
     fun getConext(): BaseContext{

@@ -5,7 +5,6 @@ import java.lang.Exception
 
 interface BaseInterceptor {
     fun readData0(context: BaseContext,data: Any)
-    fun catchException(context: BaseContext, error: Throwable)
 }
 
 class PassThroughStringInterceptor: AbstractInterceptor<String>() {
@@ -34,13 +33,11 @@ abstract class AbstractInterceptor<I> : BaseInterceptor {
         }
         catch(e : Exception){
             context.passOnData(data)
-           // context.passOnException(e)
+          //  context.passOnException(e)
         }
-    }
-
-    override fun catchException(context: BaseContext, error: Throwable) {
-        context.passOnException(error)
     }
 
     abstract fun readData(context: BaseContext, data: I)
 }
+
+

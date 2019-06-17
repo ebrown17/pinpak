@@ -5,7 +5,24 @@ import org.slf4j.LoggerFactory
 private val logger = LoggerFactory.getLogger("Main")
 
 
-fun main() {
+fun test2(){
+ logger.info("Hello from test2")
+
+ val pipeline = Pipeline()
+ println(pipeline.printAll())
+ pipeline.addFirst("1", PassThroughStringInterceptor())
+ pipeline.addLast("2", PassThroughStringInterceptor())
+ pipeline.addLast("3", PassThroughStringInterceptor())
+
+ pipeline.inject("DATA5")
+ pipeline.inject(5)
+}
+
+fun main(){
+ test2()
+}
+
+fun maint() {
     logger.info("Hello from main")
 
     val pipeline = Pipeline()
