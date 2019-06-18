@@ -1,19 +1,18 @@
 package eb
 
-abstract class BaseContext(val name: String, val pipeline: Pipeline ){
-    var next : BaseContext = this
-    var previous : BaseContext = this
-    abstract fun  passOnData(data: Any)
-    abstract  fun passOnException(error: Throwable)
+abstract class BaseContext(val name: String, val pipeline: Pipeline) {
+    var next: BaseContext = this
+    var previous: BaseContext = this
+    abstract fun passOnData(data: Any)
+    abstract fun passOnException(error: Throwable)
 
 }
 
-class HeadContext(name: String,pipeline: Pipeline): BaseContext(name,pipeline){
+class HeadContext(name: String, pipeline: Pipeline) : BaseContext(name, pipeline) {
     override fun passOnData(data: Any) {
         try {
             next.passOnData(data)
-        }
-        catch(e: Exception){
+        } catch (e: Exception) {
             passOnException(e)
         }
     }
@@ -23,13 +22,12 @@ class HeadContext(name: String,pipeline: Pipeline): BaseContext(name,pipeline){
     }
 }
 
-class TailContext(name: String,pipeline: Pipeline): BaseContext(name,pipeline){
+class TailContext(name: String, pipeline: Pipeline) : BaseContext(name, pipeline) {
 
-    override fun passOnData(data: Any){
+    override fun passOnData(data: Any) {
         try {
             pipeline.eject(data)
-        }
-        catch(e: Exception){
+        } catch (e: Exception) {
             passOnException(e)
         }
     }
@@ -40,17 +38,17 @@ class TailContext(name: String,pipeline: Pipeline): BaseContext(name,pipeline){
 
 }
 
-class InterceptorContext(name: String,pipeline: Pipeline, private val interceptor: BaseInterceptor): BaseContext(name,pipeline) {
-    override fun passOnData(data: Any){
+class InterceptorContext(name: String, pipeline: Pipeline, private val interceptor: BaseInterceptor) :
+    BaseContext(name, pipeline) {
+    override fun passOnData(data: Any) {
         try {
-            interceptor.readData0(next ,data)
-        }
-        catch(e: Exception){
+            interceptor.readData0(next, data)
+        } catch (e: Exception) {
             passOnException(e)
         }
     }
 
     override fun passOnException(error: Throwable) {
-         next.passOnException(error)
+        next.passOnException(error)
     }
 }

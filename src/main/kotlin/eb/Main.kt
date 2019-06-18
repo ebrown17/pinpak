@@ -5,26 +5,26 @@ import org.slf4j.LoggerFactory
 private val logger = LoggerFactory.getLogger("Main")
 
 
-fun test2(){
- logger.info("Hello from test2")
+fun test2() {
+    logger.info("Hello from test2")
 
- val pipeline = Pipeline()
- println(pipeline.printAll())
- pipeline.addFirst("1", PassThroughStringInterceptor())
- pipeline.addLast("2", PassThroughStringInterceptor())
- pipeline.addLast("3", PassThroughStringInterceptor())
+    val pipeline = Pipeline()
+    println(pipeline.printAll())
+    pipeline.addFirst("1", PassThroughStringInterceptor())
+    pipeline.addLast("2", PassThroughStringInterceptor())
+    pipeline.addLast("3", PassThroughStringInterceptor())
 
- pipeline.inject("DATA5")
- pipeline.inject(5)
- pipeline.addLast("0", PassThroughIntegerInterceptor())
- pipeline.inject(6)
- pipeline.remove("0")
- pipeline.inject(7)
- pipeline.inject("9")
+    pipeline.inject("DATA5")
+    pipeline.inject(5)
+    pipeline.addLast("0", PassThroughIntegerInterceptor())
+    pipeline.inject(6)
+    pipeline.remove("0")
+    pipeline.inject(7)
+    pipeline.inject("9")
 }
 
-fun main(){
- test2()
+fun main() {
+    test2()
 }
 
 fun maint() {
@@ -34,10 +34,10 @@ fun maint() {
     println(pipeline.printAll())
     pipeline.addFirst("1 Add", PassThroughStringInterceptor())
     println(pipeline.printAll())
-  //  pipeline.addLast("1 Add", PassThroughStringInterceptor())
-   pipeline.addLast("2 Add", PassThroughStringInterceptor())
+    //  pipeline.addLast("1 Add", PassThroughStringInterceptor())
+    pipeline.addLast("2 Add", PassThroughStringInterceptor())
     pipeline.addLast("3 Add", PassThroughStringInterceptor())
-   println(pipeline)
+    println(pipeline)
 
     pipeline.inject("DATA2")
     println(pipeline.printAll())

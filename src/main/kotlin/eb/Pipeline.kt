@@ -6,8 +6,8 @@ class Pipeline {
 
     private val logger = LoggerFactory.getLogger(Pipeline::class.java)
 
-    private val head: HeadContext = HeadContext("HeadContext",this)
-    private val tail: TailContext = TailContext("TailContext",this)
+    private val head: HeadContext = HeadContext("HeadContext", this)
+    private val tail: TailContext = TailContext("TailContext", this)
 
     init {
         head.next = tail
@@ -32,20 +32,18 @@ class Pipeline {
 
     fun addAfter(afterName: String, newName: String, interceptor: BaseInterceptor) {
         val context = getContext(afterName)
-        if(context !=null){
+        if (context != null) {
             addAfter(context, newName, interceptor)
-        }
-        else{
+        } else {
             logger.error("Context to add after not found with name $afterName")
         }
     }
 
     fun addBefore(beforeName: String, newName: String, interceptor: BaseInterceptor) {
         val context = getContext(beforeName)
-        if(context !=null){
+        if (context != null) {
             addBefore(context, newName, interceptor)
-        }
-        else{
+        } else {
             logger.error("Context to add before not found with name $beforeName")
         }
     }
@@ -130,7 +128,7 @@ class Pipeline {
 
     private fun replace(replaced: BaseContext, newName: String, interceptor: BaseInterceptor) {
         var context = head.next
-        while (context !== tail) {
+        while (context != tail) {
             if (context.name == replaced.name) {
                 break
             }
@@ -169,7 +167,7 @@ class Pipeline {
     }
 
     private fun isDuplicate(name: String): Boolean {
-        var context : BaseContext = head
+        var context: BaseContext = head
         while (context != tail) {
             if (context.name == name) {
                 return true
@@ -180,11 +178,11 @@ class Pipeline {
     }
 
     private fun bindNewContext(name: String, interceptor: BaseInterceptor): InterceptorContext {
-        val ctx = InterceptorContext(name,this,interceptor)
+        val ctx = InterceptorContext(name, this, interceptor)
         return ctx
     }
 
-    fun printAll() : String {
+    fun printAll(): String {
         var context: BaseContext = head
         var message = "Context:["
         while (context !== tail) {
@@ -205,16 +203,16 @@ class Pipeline {
         return "$message]"
     }
 
-    fun inject(data: Any){
+    fun inject(data: Any) {
         logger.info("injected $data in front of pipeline")
         head.passOnData(data)
     }
 
-    fun eject(data: Any){
+    fun eject(data: Any) {
         logger.info("pipeline ejected $data")
     }
 
-    fun getConext(): BaseContext{
+    fun getConext(): BaseContext {
         return head
     }
 
