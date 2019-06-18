@@ -24,7 +24,6 @@ class PassThroughIntegerInterceptor: AbstractInterceptor<Int>() {
 }
 
 abstract class AbstractInterceptor<I> : BaseInterceptor {
-
     override fun readData0(context: BaseContext, data: Any) {
         try {
             @Suppress("UNCHECKED_CAST")
@@ -33,7 +32,6 @@ abstract class AbstractInterceptor<I> : BaseInterceptor {
         }
         catch(e : Exception){
             context.passOnData(data)
-          //  context.passOnException(e)
         }
     }
 

@@ -10,7 +10,12 @@ abstract class BaseContext(val name: String, val pipeline: Pipeline ){
 
 class HeadContext(name: String,pipeline: Pipeline): BaseContext(name,pipeline){
     override fun passOnData(data: Any) {
-        next.passOnData(data)
+        try {
+            next.passOnData(data)
+        }
+        catch(e: Exception){
+            passOnException(e)
+        }
     }
 
     override fun passOnException(error: Throwable) {
@@ -21,7 +26,12 @@ class HeadContext(name: String,pipeline: Pipeline): BaseContext(name,pipeline){
 class TailContext(name: String,pipeline: Pipeline): BaseContext(name,pipeline){
 
     override fun passOnData(data: Any){
-        pipeline.eject(data)
+        try {
+            pipeline.eject(data)
+        }
+        catch(e: Exception){
+            passOnException(e)
+        }
     }
 
     override fun passOnException(error: Throwable) {
@@ -32,7 +42,12 @@ class TailContext(name: String,pipeline: Pipeline): BaseContext(name,pipeline){
 
 class InterceptorContext(name: String,pipeline: Pipeline, private val interceptor: BaseInterceptor): BaseContext(name,pipeline) {
     override fun passOnData(data: Any){
-        interceptor.readData0(next ,data)
+        try {
+            interceptor.readData0(next ,data)
+        }
+        catch(e: Exception){
+            passOnException(e)
+        }
     }
 
     override fun passOnException(error: Throwable) {

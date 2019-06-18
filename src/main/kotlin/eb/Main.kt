@@ -16,6 +16,11 @@ fun test2(){
 
  pipeline.inject("DATA5")
  pipeline.inject(5)
+ pipeline.addLast("0", PassThroughIntegerInterceptor())
+ pipeline.inject(6)
+ pipeline.remove("0")
+ pipeline.inject(7)
+ pipeline.inject("9")
 }
 
 fun main(){
