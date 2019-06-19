@@ -2,7 +2,7 @@ package eb
 
 import org.slf4j.LoggerFactory
 
-class Pipeline(val pipelineName: String) {
+class Pipeline(private val pipelineName: String) {
 
     private val logger = LoggerFactory.getLogger(Pipeline::class.java)
 
