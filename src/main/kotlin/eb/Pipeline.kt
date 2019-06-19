@@ -2,7 +2,7 @@ package eb
 
 import org.slf4j.LoggerFactory
 
-class Pipeline {
+class Pipeline(val pipelineName: String) {
 
     private val logger = LoggerFactory.getLogger(Pipeline::class.java)
 
@@ -204,12 +204,12 @@ class Pipeline {
     }
 
     fun inject(data: Any) {
-        logger.info("injected $data in front of pipeline")
+        logger.info("injected $data in front of $pipelineName pipeline")
         head.passOnData(data)
     }
 
     fun eject(data: Any) {
-        logger.info("pipeline ejected $data")
+        logger.info("$pipelineName pipeline ejected $data")
     }
 
     fun getConext(): BaseContext {

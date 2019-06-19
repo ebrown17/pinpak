@@ -8,7 +8,7 @@ private val logger = LoggerFactory.getLogger("Main")
 fun test2() {
     logger.info("Hello from test2")
 
-    val pipeline = Pipeline()
+    val pipeline = Pipeline("test2")
     println(pipeline.printAll())
     pipeline.addFirst("1", PassThroughStringInterceptor())
     pipeline.addLast("2", PassThroughStringInterceptor())
@@ -25,12 +25,13 @@ fun test2() {
 
 fun main() {
     test2()
+    maint()
 }
 
 fun maint() {
     logger.info("Hello from main")
 
-    val pipeline = Pipeline()
+    val pipeline = Pipeline("maint")
     println(pipeline.printAll())
     pipeline.addFirst("1 Add", PassThroughStringInterceptor())
     println(pipeline.printAll())
