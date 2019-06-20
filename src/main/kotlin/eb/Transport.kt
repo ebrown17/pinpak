@@ -14,9 +14,11 @@ class Transport private constructor(val config: TransportConfig) {
     }
 
     companion object {
+        /**
+         * Creates a Transport with default values
+         */
         fun create(name: String): Transport {
-            val defaultConfig = TransportConfig(name)
-            return Transport(defaultConfig)
+            return create(name) { }
         }
         fun create(name: String,config: (TransportConfig) -> Unit): Transport {
             val userConfig= TransportConfig(name)
@@ -33,11 +35,18 @@ class TransportConfig(val name: String) {
     var defaultValue1:Int = 1
     var defaultValue2:Int = 2
 
+    fun addInterceptor(name: String, interceptor: BaseInterceptor) {
+        pipeline.addLast(name, interceptor)
+    }
+
 }
 
 fun main() {
     val transport = Transport.create("TEST1") { config : TransportConfig ->
         config.defaultValue1 = 5
+        config.addInterceptor("1", PassThroughStringInterceptor())
+        config.addInterceptor("2", PassThroughStringInterceptor())
+        config.addInterceptor("3", PassThroughStringInterceptor())
     }
 
     println("TEST 1")
@@ -52,9 +61,12 @@ fun main() {
     println(transport2.config.defaultValue2)
 
 
-    transport.addInterceptorFirst("1", PassThroughStringInterceptor())
-    transport.addInterceptorFirst("1", PassThroughStringInterceptor())
-    transport.addInterceptorFirst("2", PassThroughStringInterceptor())
+    transport2.addInterceptorFirst("1", PassThroughStringInterceptor())
+    transport2.addInterceptorFirst("2", PassThroughStringInterceptor())
+    transport2.addInterceptorFirst("3", PassThroughStringInterceptor())
 
-    transport.injectData("DATAT ATAT ATATA")
+    transport.injectData("DATAT 1")
+    transport2.injectData("DATAT 2")
+
+
 }
