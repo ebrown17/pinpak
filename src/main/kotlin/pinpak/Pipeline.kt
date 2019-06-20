@@ -1,4 +1,4 @@
-package eb
+package pinpak
 
 import org.slf4j.LoggerFactory
 
@@ -179,6 +179,7 @@ class Pipeline(private val pipelineName: String) {
 
     private fun bindNewContext(name: String, interceptor: BaseInterceptor): InterceptorContext {
         val ctx = InterceptorContext(name, this, interceptor)
+        interceptor.name = name
         return ctx
     }
 
