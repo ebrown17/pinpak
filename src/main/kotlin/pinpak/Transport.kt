@@ -13,8 +13,12 @@ class Transport private constructor(val config: TransportConfig) {
         pipeline.addFirst(name, interceptor)
     }
 
+    fun replaceInterceptor(replaced: String, newName: String, interceptor: BaseInterceptor){
+        pipeline.replace(replaced,newName,interceptor)
+    }
+
     companion object {
-        /**
+        /**replaceInterceptor
          * Creates a Transport with default values
          */
         fun create(name: String): Transport {
@@ -23,7 +27,6 @@ class Transport private constructor(val config: TransportConfig) {
         fun create(name: String,config: (TransportConfig) -> Unit): Transport {
             val userConfig= TransportConfig(name)
             config(userConfig)
-
             return Transport(userConfig)
         }
     }
@@ -65,8 +68,12 @@ fun main() {
     transport2.addInterceptorFirst("2", PassThroughStringInterceptor())
     transport2.addInterceptorFirst("3", PassThroughStringInterceptor())
 
+
     transport.injectData("DATAT 1")
     transport2.injectData("DATAT 2")
 
+    transport2.replaceInterceptor("2","NEW 2",PassThroughStringInterceptor())
+
+    transport2.injectData("TTT 2")
 
 }

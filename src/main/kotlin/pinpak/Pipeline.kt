@@ -205,15 +205,15 @@ class Pipeline(private val pipelineName: String) {
     }
 
     fun inject(data: Any) {
-        logger.info("injected $data in front of $pipelineName pipeline")
+        logger.info("injecting $data at $pipelineName's ${head.name}")
         head.passOnData(data)
     }
 
-    fun eject(data: Any) {
-        logger.info("$pipelineName pipeline ejected $data")
+    fun eject(context: BaseContext, data: Any) {
+        logger.info("$pipelineName's ${context.name} ejected $data")
     }
 
-    fun getConext(): BaseContext {
+    fun getContext(): BaseContext {
         return head
     }
 
