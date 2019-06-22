@@ -1,4 +1,4 @@
-package pinpak
+package pinpak.core
 
 import org.slf4j.LoggerFactory
 
@@ -8,6 +8,8 @@ class Pipeline(private val pipelineName: String) {
 
     private val head: HeadContext = HeadContext("HeadContext", this)
     private val tail: TailContext = TailContext("TailContext", this)
+
+    private var ejectionHandler: Transport? = null
 
     init {
         head.next = tail
@@ -210,7 +212,12 @@ class Pipeline(private val pipelineName: String) {
     }
 
     fun eject(context: BaseContext, data: Any) {
-        logger.info("$pipelineName's ${context.name} ejected $data")
+        ejectionHandler?.catchEjection(data)
+
+    }
+
+    fun registerEjectionHandler(handler: Transport) {
+        ejectionHandler = handler
     }
 
     fun getContext(): BaseContext {

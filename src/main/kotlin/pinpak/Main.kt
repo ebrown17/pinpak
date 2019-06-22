@@ -1,6 +1,7 @@
 package pinpak
 
 import org.slf4j.LoggerFactory
+import pinpak.core.*
 
 private val logger = LoggerFactory.getLogger("Main")
 
@@ -24,8 +25,22 @@ fun test2() {
 }
 
 fun main() {
-    test2()
-    maint()
+    val test = Transport.create("TEST")
+    test.addEjectionHandler(EjectionHandler { data -> println("Data ejected data") })
+
+    val tests = Transport.create("TEST2") { config: TransportConfig ->
+        config.handleEjections = true
+        config.addInterceptor("1",PassThroughStringInterceptor())
+    }
+
+    println(tests.transportName)
+    tests.addEjectionHandler( EjectionHandler { data -> println("${tests.transportName} ejected $data") })
+
+    test.injectData("DATA TEST MMM")
+
+    tests.injectData("DATA TEST MMM")
+
+
 }
 
 fun maint() {

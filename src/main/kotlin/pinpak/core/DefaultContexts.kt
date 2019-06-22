@@ -1,4 +1,4 @@
-package pinpak
+package pinpak.core
 
 abstract class BaseContext(val name: String, val pipeline: Pipeline) {
     var next: BaseContext = this
