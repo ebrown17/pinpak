@@ -9,7 +9,9 @@ class Transport private constructor(val config: TransportConfig) {
 
     init {
         if (config.handleEjections) {
+            ejectionHandler = config.ejectionHandler
             pipeline.registerEjectionHandler(this)
+
         }
     }
 
@@ -63,8 +65,16 @@ class TransportConfig(val name: String) {
     val pipeline: Pipeline = Pipeline(name)
     var handleEjections = false
 
+    var ejectionHandler: EjectionHandler? = null
+        private set
+
     fun addInterceptor(name: String, interceptor: BaseInterceptor) {
         pipeline.addLast(name, interceptor)
+    }
+
+    fun addEjectionHandler(handler:EjectionHandler){
+        handleEjections = true
+        ejectionHandler = handler
     }
 
 }
