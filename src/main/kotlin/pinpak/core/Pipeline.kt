@@ -6,10 +6,10 @@ class Pipeline(private val pipelineName: String) {
 
     private val logger = LoggerFactory.getLogger(Pipeline::class.java)
 
-    private val head: HeadContext = HeadContext("HeadContext", this)
-    private val tail: TailContext = TailContext("TailContext", this)
+    private val head: HeadContext = HeadContext("$pipelineName-HeadContext", this)
+    private val tail: TailContext = TailContext("$pipelineName-TailContext", this)
 
-    private var ejectionHandler: Transport? = null
+    private var ejectionHandler: EjectionHandler? = null
 
     init {
         head.next = tail
@@ -211,12 +211,12 @@ class Pipeline(private val pipelineName: String) {
         head.passOnData(data)
     }
 
-    fun eject(context: BaseContext, data: Any) {
-        ejectionHandler?.catchEjection(data)
+    fun eject(name: String, data: Any) {
+        ejectionHandler?.handleEjection(name,data)
 
     }
 
-    fun registerEjectionHandler(handler: Transport) {
+    fun registerEjectionHandler(handler: EjectionHandler) {
         ejectionHandler = handler
     }
 

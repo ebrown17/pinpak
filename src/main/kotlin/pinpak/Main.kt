@@ -26,11 +26,10 @@ fun test2() {
 
 fun main() {
     val test = Transport.create("TEST")
-    test.addEjectionHandler(EjectionHandler { data -> println("Transport ejected $data") })
 
     val tests = Transport.create("TEST2") { config: TransportConfig ->
         config.addInterceptor("1", PassThroughStringInterceptor())
-        config.addEjectionHandler(EjectionHandler { data -> println("Transport ejected $data") })
+        config.addEjectionHandler(EjectionHandler {name,data -> println("$name ejected $data") })
     }
 
     println(tests.transportName)

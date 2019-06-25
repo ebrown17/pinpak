@@ -10,7 +10,7 @@ class Transport private constructor(val config: TransportConfig) {
     init {
         if (config.handleEjections) {
             ejectionHandler = config.ejectionHandler
-            pipeline.registerEjectionHandler(this)
+            pipeline.registerEjectionHandler(ejectionHandler!!)
 
         }
     }
@@ -27,14 +27,8 @@ class Transport private constructor(val config: TransportConfig) {
         pipeline.replace(replaced, newName, interceptor)
     }
 
-    internal fun catchEjection(data: Any) {
-        ejectionHandler?.handleEjection(data)
-    }
-
-    fun addEjectionHandler(handler: EjectionHandler){
-        if(ejectionHandler == null){
-            ejectionHandler = handler
-        }
+    private fun catchEjection(name: String,data: Any) {
+        ejectionHandler?.handleEjection(name,data)
     }
 
     companion object {
@@ -55,9 +49,9 @@ class Transport private constructor(val config: TransportConfig) {
 
 
 
-class EjectionHandler(private val eject: (Any) -> Unit) {
-    fun handleEjection(data: Any){
-        eject(data)
+class EjectionHandler(private val eject: (name: String,Any) -> Unit) {
+    fun handleEjection(name: String,data: Any){
+        eject(name,data)
     }
 }
 
@@ -65,7 +59,7 @@ class TransportConfig(val name: String) {
     val pipeline: Pipeline = Pipeline(name)
     var handleEjections = false
 
-    var ejectionHandler: EjectionHandler? = null
+    lateinit var ejectionHandler: EjectionHandler
         private set
 
     fun addInterceptor(name: String, interceptor: BaseInterceptor) {
@@ -76,5 +70,4 @@ class TransportConfig(val name: String) {
         handleEjections = true
         ejectionHandler = handler
     }
-
 }
