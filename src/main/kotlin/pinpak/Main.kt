@@ -25,20 +25,19 @@ fun test2() {
 }
 
 fun main() {
-    val test = Transport.create("TEST")
-
     val tests = Transport.create("TEST2") { config: TransportConfig ->
-        config.addInterceptor("1", PassThroughStringInterceptor())
-        config.addEjectionHandler(EjectionHandler {name,data -> println("$name ejected $data") })
+
+        for(i in 0..100){
+            config.addInterceptor("$i", PassThroughStringInterceptorChecker("$i"))
+        }
+        config.addEjectionHandler(EjectionHandler { name, data -> println("$name ejected $data") })
     }
 
     println(tests.transportName)
-    //tests.addEjectionHandler( EjectionHandler { data -> println("${tests.transportName} ejected $data") })
 
-    test.injectData("DATA TEST MMM")
-
-    tests.injectData("DATA TEST MMM")
-
+    for(i in 100 downTo 0){
+        tests.injectData("$i")
+    }
 
 }
 
