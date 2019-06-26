@@ -26,14 +26,14 @@ class TailContext(name: String, pipeline: Pipeline) : BaseContext(name, pipeline
 
     override fun passOnData(data: Any) {
         try {
-            pipeline.eject(name,data)
+            pipeline.eject(name, data)
         } catch (e: Exception) {
             passOnException(e)
         }
     }
 
     override fun passOnException(error: Throwable) {
-        pipeline.eject(name,error)
+        pipeline.eject(name, error)
     }
 }
 
