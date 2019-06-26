@@ -2,7 +2,7 @@ package pinpak.core
 
 class Transport private constructor(val config: TransportConfig) {
 
-    private val pipeline: Pipeline = config.pipeline
+    val pipeline: Pipeline = config.pipeline
     val transportName = config.name
     private var ejectionHandler: EjectionHandler? = null
 
@@ -60,11 +60,15 @@ class EjectionHandler(private val eject: (name: String, Any) -> Unit) {
 class TransportConfig(val name: String) {
     val pipeline: Pipeline = Pipeline(name)
     var handleEjections = false
-
+            private set
     lateinit var ejectionHandler: EjectionHandler
         private set
 
-    fun addInterceptor(name: String, interceptor: BaseInterceptor) {
+    fun addInterceptorFirst(name: String, interceptor: BaseInterceptor) {
+        pipeline.addFirst(name, interceptor)
+    }
+
+    fun addInterceptorLast(name: String, interceptor: BaseInterceptor) {
         pipeline.addLast(name, interceptor)
     }
 
