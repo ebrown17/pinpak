@@ -17,36 +17,45 @@ class Pipeline(private val pipelineName: String) {
     }
 
     fun addLast(name: String, interceptor: BaseInterceptor) {
-        if (!isDuplicate(name)) {
-            addBefore(tail, name, interceptor)
-        } else {
+        if (isDuplicate(name)) {
             logger.error("Duplicate BaseInterceptor name: $name")
+        } else {
+            addBefore(tail, name, interceptor)
         }
     }
 
+
     fun addFirst(name: String, interceptor: BaseInterceptor) {
-        if (!isDuplicate(name)) {
-            addAfter(head, name, interceptor)
-        } else {
+        if (isDuplicate(name)) {
             logger.error("Duplicate BaseInterceptor name: $name")
+        } else {
+            addAfter(head, name, interceptor)
         }
     }
 
     fun addAfter(afterName: String, newName: String, interceptor: BaseInterceptor) {
-        val context = getContext(afterName)
-        if (context != null) {
-            addAfter(context, newName, interceptor)
+        if (isDuplicate(newName)) {
+            logger.error("Duplicate BaseInterceptor name: $newName")
         } else {
-            logger.error("Context to add after not found with name $afterName")
+            val context = getContext(afterName)
+            if (context != null) {
+                addAfter(context, newName, interceptor)
+            } else {
+                logger.error("Context to add after not found with name $afterName")
+            }
         }
     }
 
     fun addBefore(beforeName: String, newName: String, interceptor: BaseInterceptor) {
-        val context = getContext(beforeName)
-        if (context != null) {
-            addBefore(context, newName, interceptor)
+        if (isDuplicate(newName)) {
+            logger.error("Duplicate BaseInterceptor name: $newName")
         } else {
-            logger.error("Context to add before not found with name $beforeName")
+            val context = getContext(beforeName)
+            if (context != null) {
+                addBefore(context, newName, interceptor)
+            } else {
+                logger.error("Context to add after not found with name $beforeName")
+            }
         }
     }
 
@@ -150,7 +159,6 @@ class Pipeline(private val pipelineName: String) {
 
             context.next = context
             context.previous = context
-
         }
     }
 
@@ -212,8 +220,7 @@ class Pipeline(private val pipelineName: String) {
     }
 
     fun eject(name: String, data: Any) {
-        ejectionHandler?.handleEjection(name,data)
-
+        ejectionHandler?.handleEjection(name, data)
     }
 
     fun registerEjectionHandler(handler: EjectionHandler) {
@@ -223,5 +230,4 @@ class Pipeline(private val pipelineName: String) {
     fun getContext(): BaseContext {
         return head
     }
-
 }
