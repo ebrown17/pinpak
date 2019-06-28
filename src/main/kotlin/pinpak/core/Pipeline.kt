@@ -225,6 +225,10 @@ class Pipeline(private val pipelineName: String) {
         return "$message]"
     }
 
+    fun isContextPresent(name:String):Boolean{
+       return isDuplicate(name)
+    }
+
     fun inject(data: Any) {
         logger.info("injecting $data at $pipelineName's ${head.name}")
         head.passOnData(data)
