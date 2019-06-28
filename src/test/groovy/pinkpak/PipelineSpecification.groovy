@@ -1,6 +1,6 @@
 package pinkpak
 
-import pinpak.core.InterceptorContext
+import pinpak.core.BaseContext
 import pinpak.core.PassThroughStringInterceptor
 import pinpak.core.Pipeline
 import spock.lang.Shared
@@ -8,16 +8,10 @@ import spock.lang.Specification
 
 class PipelineSpecification extends Specification {
     @Shared
-    Pipeline pipeline
-
-
-    def setup() {
-        pipeline = new Pipeline("Spock")
-    }
+    Pipeline pipeline = new Pipeline("Spock")
 
     def cleanup() {
         pipeline.removeAll()
-        pipeline = null
     }
 
     def "Pipeline has expected amount of Interceptors using addLast"() {
@@ -32,7 +26,7 @@ class PipelineSpecification extends Specification {
         pipeline.getSize() == totalAdded
 
         where:
-        interceptorNames                                   | totalAdded
+        interceptorNames                                               | totalAdded
         []                                                             | 0
         ["1"]                                                          | 1
         ["1", "2", "3", "4", "5", "6", "7"]                            | 7
@@ -63,7 +57,7 @@ class PipelineSpecification extends Specification {
         pipeline.getSize() == totalAdded
 
         where:
-        interceptorNames                                   | totalAdded
+        interceptorNames                                               | totalAdded
         []                                                             | 0
         ["1"]                                                          | 1
         ["1", "2", "3", "4", "5", "6", "7"]                            | 7
@@ -162,5 +156,95 @@ class PipelineSpecification extends Specification {
         ["Spock-TailContext", "2", "3"]                                | 2
         ["Spock-TailContext", "2", "3", "Spock-HeadContext"]           | 2
         ["1", "Spock-TailContext", "2", "3", "Spock-HeadContext", "1"] | 3
+    }
+
+    def "Pipeline has expected amount of Interceptors using remove"() {
+        given:
+        interceptorNames.each { name ->
+            pipeline.addLast(name, new PassThroughStringInterceptor())
+        }
+        when:
+        toRemove.each { name ->
+            pipeline.remove(name)
+        }
+        then:
+        println("remove ${pipeline.getSize()} == $totalLeft")
+        pipeline.getSize() == totalLeft
+
+        where:
+        interceptorNames           | toRemove                       | totalLeft
+        []                         | []                             | 0
+        []                         | ["1"]                          | 0
+        ["1"]                      | ["1"]                          | 0
+        ["1", "2"]                 | ["1"]                          | 1
+        ["1", "2", "3", "4", "5"]  | ["5", "1"]                     | 3
+        ["1", "2", "3", "4", "5"]  | ["5", "1", "5", "3", "2"]      | 1
+        ["Spock-HeadContext", "2"] | ["Spock-HeadContext"]          | 1
+        ["Spock-HeadContext", "2"] | ["Spock-TailContext"]          | 1
+        ["Spock-HeadContext"]      | ["Spock-TailContext"]          | 0
+        ["1", "2", "3", "4", "5"]  | ["5", "1", "5", "3", "2", "4"] | 0
+
+    }
+
+    def "Pipeline has expected amount of Interceptors using removeFirst"() {
+        given:
+        interceptorNames.each { name ->
+            pipeline.addLast(name, new PassThroughStringInterceptor())
+        }
+        when:
+        for (int i in 1..removes) {
+            pipeline.removeFirst()
+        }
+
+        then:
+        int max = ((interceptorNames.size() - removes <= 0 ) ? 0 : interceptorNames.size() - removes)
+        assert (max >=expectedLeft.size())
+        println("removeFirst ${pipeline.toString()} == $expectedLeft")
+        BaseContext ctx = pipeline.head.next
+        def count = 0
+        while (ctx != pipeline.tail) {
+            assert ctx.name == expectedLeft[count++]
+            ctx = ctx.next
+        }
+
+        where:
+        interceptorNames          | removes | expectedLeft
+        []                        | 5       | []
+        ["1"]                     | 1       | []
+        ["1", "2"]                | 1       | ["2"]
+        ["1", "2", "3", "4", "5"] | 2       | ["3", "4", "5"]
+        ["5", "4", "3", "1", "2"] | 2       | ["3", "1", "2"]
+        ["1", "2", "3", "4", "5"] | 5       | []
+    }
+
+    def "Pipeline has expected amount of Interceptors using removeLast"() {
+        given:
+        interceptorNames.each { name ->
+            pipeline.addLast(name, new PassThroughStringInterceptor())
+        }
+        when:
+        for (int i in 1..removes) {
+            pipeline.removeLast()
+        }
+
+        then:
+        int max = ((interceptorNames.size() - removes <= 0 ) ? 0 : interceptorNames.size() - removes)
+        assert (max >=expectedLeft.size())
+        println("removeLast ${pipeline.toString()} == $expectedLeft")
+        BaseContext ctx = pipeline.head.next
+        def count = 0
+        while (ctx != pipeline.tail) {
+            assert ctx.name == expectedLeft[count++]
+            ctx = ctx.next
+        }
+
+        where:
+        interceptorNames          | removes | expectedLeft
+        []                        | 5       | []
+        ["1"]                     | 1       | []
+        ["1", "2"]                | 1       | ["1"]
+        ["1", "2", "3", "4", "5"] | 2       | ["1", "2", "3"]
+        ["5", "4", "3", "1", "2"] | 2       | ["5", "4", "3"]
+        ["1", "2", "3", "4", "5"] | 5       | []
     }
 }
