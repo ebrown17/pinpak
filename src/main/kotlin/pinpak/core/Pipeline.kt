@@ -217,9 +217,9 @@ class Pipeline(private val pipelineName: String) {
 
     override fun toString(): String {
         var context = head.next
-        var message = "Context:["
+        var message = "Pipeline:["
         while (context !== tail) {
-            message += "[ Ctx: ${context.name} ]"
+            message += "(${context.name})"
             context = context.next
         }
         return "$message]"
