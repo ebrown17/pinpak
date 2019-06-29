@@ -22,27 +22,35 @@ class PipelineSpecification extends Specification {
             pipeline.addLast(name, new PassThroughStringInterceptor())
         }
         then:
-        println("addLast() ${pipeline.getSize()} == $totalAdded")
-        pipeline.getSize() == totalAdded
+        println("addLast ${pipeline.getSize()} == $total")
+        println("addLast $pipeline == $expected")
+        assert pipeline.getSize() == total
+
+        BaseContext ctx = pipeline.head.next
+        def count = 0
+        while (ctx != pipeline.tail) {
+            assert ctx.name == expected[count++]
+            ctx = ctx.next
+        }
 
         where:
-        interceptorNames                                               | totalAdded
-        []                                                             | 0
-        ["1"]                                                          | 1
-        ["1", "2", "3", "4", "5", "6", "7"]                            | 7
-        ["1", "2"]                                                     | 2
-        ["1", "1"]                                                     | 1
-        ["1", "1", "1"]                                                | 1
-        ["1", "2", "3", "3", "4", "1", "5", "6", "7", "1"]             | 7
-        ["1", "2", "1", "2"]                                           | 2
-        ["Spock-HeadContext", "2"]                                     | 1
-        ["Spock-HeadContext", "2", "3"]                                | 2
-        ["Spock-HeadContext", "2", "3", "Spock-TailContext"]           | 2
-        ["1", "Spock-HeadContext", "2", "3", "Spock-TailContext", "1"] | 3
-        ["Spock-TailContext", "2"]                                     | 1
-        ["Spock-TailContext", "2", "3"]                                | 2
-        ["Spock-TailContext", "2", "3", "Spock-HeadContext"]           | 2
-        ["1", "Spock-TailContext", "2", "3", "Spock-HeadContext", "1"] | 3
+        interceptorNames                                               | total | expected
+        []                                                             | 0     | []
+        ["1"]                                                          | 1     | ["1"]
+        ["1", "2", "3", "4", "5", "6", "7"]                            | 7     | ["1", "2", "3", "4", "5", "6", "7"]
+        ["1", "2"]                                                     | 2     | ["1", "2"]
+        ["1", "1"]                                                     | 1     | ["1"]
+        ["1", "1", "1"]                                                | 1     | ["1"]
+        ["1", "2", "3", "3", "4", "1", "5", "6", "7", "1"]             | 7     | ["1", "2", "3", "4", "5", "6", "7"]
+        ["1", "2", "1", "2"]                                           | 2     | ["1", "2"]
+        ["Spock-HeadContext", "2"]                                     | 1     | ["2"]
+        ["Spock-HeadContext", "2", "3"]                                | 2     | ["2", "3"]
+        ["Spock-HeadContext", "2", "3", "Spock-TailContext"]           | 2     | ["2", "3"]
+        ["1", "Spock-HeadContext", "2", "3", "Spock-TailContext", "1"] | 3     | ["1", "2", "3"]
+        ["Spock-TailContext", "2"]                                     | 1     | ["2"]
+        ["Spock-TailContext", "2", "3"]                                | 2     | ["2", "3"]
+        ["Spock-TailContext", "2", "3", "Spock-HeadContext"]           | 2     | ["2", "3"]
+        ["1", "Spock-TailContext", "2", "3", "Spock-HeadContext", "1"] | 3     | ["1", "2", "3"]
     }
 
     def "Pipeline has expected amount of Interceptors using addFirst"() {
@@ -53,27 +61,35 @@ class PipelineSpecification extends Specification {
             pipeline.addFirst(name, new PassThroughStringInterceptor())
         }
         then:
-        println("addFirst() ${pipeline.getSize()} == $totalAdded")
-        pipeline.getSize() == totalAdded
+        println("addFirst ${pipeline.getSize()} == $total")
+        println("addFirst $pipeline == ${expected.reverse()}")
+        assert pipeline.getSize() == total
+
+        BaseContext ctx = pipeline.head.next
+        def count = total-1
+        while (ctx != pipeline.tail) {
+            assert ctx.name == expected[count--]
+            ctx = ctx.next
+        }
 
         where:
-        interceptorNames                                               | totalAdded
-        []                                                             | 0
-        ["1"]                                                          | 1
-        ["1", "2", "3", "4", "5", "6", "7"]                            | 7
-        ["1", "2"]                                                     | 2
-        ["1", "1"]                                                     | 1
-        ["1", "1", "1"]                                                | 1
-        ["1", "2", "3", "3", "4", "1", "5", "6", "7", "1"]             | 7
-        ["1", "2", "1", "2"]                                           | 2
-        ["Spock-HeadContext", "2"]                                     | 1
-        ["Spock-HeadContext", "2", "3"]                                | 2
-        ["Spock-HeadContext", "2", "3", "Spock-TailContext"]           | 2
-        ["1", "Spock-HeadContext", "2", "3", "Spock-TailContext", "1"] | 3
-        ["Spock-TailContext", "2"]                                     | 1
-        ["Spock-TailContext", "2", "3"]                                | 2
-        ["Spock-TailContext", "2", "3", "Spock-HeadContext"]           | 2
-        ["1", "Spock-TailContext", "2", "3", "Spock-HeadContext", "1"] | 3
+        interceptorNames                                                | total | expected
+        []                                                             | 0     | []
+        ["1"]                                                          | 1     | ["1"]
+        ["1", "2", "3", "4", "5", "6", "7"]                            | 7     | ["1", "2", "3", "4", "5", "6", "7"]
+        ["1", "2"]                                                     | 2     | ["1", "2"]
+        ["1", "1"]                                                     | 1     | ["1"]
+        ["1", "1", "1"]                                                | 1     | ["1"]
+        ["1", "2", "3", "3", "4", "1", "5", "6", "7", "1"]             | 7     | ["1", "2", "3", "4", "5", "6", "7"]
+        ["1", "2", "1", "2"]                                           | 2     | ["1", "2"]
+        ["Spock-HeadContext", "2"]                                     | 1     | ["2"]
+        ["Spock-HeadContext", "2", "3"]                                | 2     | ["2", "3"]
+        ["Spock-HeadContext", "2", "3", "Spock-TailContext"]           | 2     | ["2", "3"]
+        ["1", "Spock-HeadContext", "2", "3", "Spock-TailContext", "1"] | 3     | ["1", "2", "3"]
+        ["Spock-TailContext", "2"]                                     | 1     | ["2"]
+        ["Spock-TailContext", "2", "3"]                                | 2     | ["2", "3"]
+        ["Spock-TailContext", "2", "3", "Spock-HeadContext"]           | 2     | ["2", "3"]
+        ["1", "Spock-TailContext", "2", "3", "Spock-HeadContext", "1"] | 3     | ["1", "2", "3"]
 
     }
 
@@ -94,28 +110,36 @@ class PipelineSpecification extends Specification {
             }
         }
         then:
-        println pipeline
-        println("addAfter ${pipeline.getSize()} == $totalAdded")
-        pipeline.getSize() == totalAdded
+        println("addAfter ${pipeline.getSize()} == $total")
+        println("addAfter $pipeline == $expected")
+        assert pipeline.getSize() == total
+
+        BaseContext ctx = pipeline.head.next
+        def count = 0
+        while (ctx != pipeline.tail) {
+            assert ctx.name == expected[count++]
+            ctx = ctx.next
+        }
 
         where:
-        interceptorNames                                               | totalAdded
-        []                                                             | 0
-        ["1"]                                                          | 1
-        ["1", "2", "3", "4", "5", "6", "7"]                            | 7
-        ["1", "2"]                                                     | 2
-        ["1", "1"]                                                     | 1
-        ["1", "1", "1"]                                                | 1
-        ["1", "2", "3", "3", "4", "1", "5", "6", "7", "1"]             | 7
-        ["1", "2", "1", "2"]                                           | 2
-        ["Spock-HeadContext", "2"]                                     | 1
-        ["Spock-HeadContext", "2", "3"]                                | 2
-        ["Spock-HeadContext", "2", "3", "Spock-TailContext"]           | 2
-        ["1", "Spock-HeadContext", "2", "3", "Spock-TailContext", "1"] | 3
-        ["Spock-TailContext", "2"]                                     | 1
-        ["Spock-TailContext", "2", "3"]                                | 2
-        ["Spock-TailContext", "2", "3", "Spock-HeadContext"]           | 2
-        ["1", "Spock-TailContext", "2", "3", "Spock-HeadContext", "1"] | 3
+        interceptorNames                                                | total | expected
+        []                                                             | 0     | []
+        ["1"]                                                          | 1     | ["1"]
+        ["1", "2", "3", "4", "5", "6", "7"]                            | 7     | ["1", "2", "3", "4", "5", "6", "7"]
+        ["1", "2"]                                                     | 2     | ["1", "2"]
+        ["1", "1"]                                                     | 1     | ["1"]
+        ["1", "1", "1"]                                                | 1     | ["1"]
+        ["1", "2", "3", "3", "4", "1", "5", "6", "7", "1"]             | 7     | ["1", "2", "3", "4", "5", "6", "7"]
+        ["1", "2", "1", "2"]                                           | 2     | ["1", "2"]
+        ["Spock-HeadContext", "2"]                                     | 1     | ["2"]
+        ["Spock-HeadContext", "2", "3"]                                | 2     | ["2", "3"]
+        ["Spock-HeadContext", "2", "3", "Spock-TailContext"]           | 2     | ["2", "3"]
+        ["1", "Spock-HeadContext", "2", "3", "Spock-TailContext", "1"] | 3     | ["1", "2", "3"]
+        ["Spock-TailContext", "2"]                                     | 1     | ["2"]
+        ["Spock-TailContext", "2", "3"]                                | 2     | ["2", "3"]
+        ["Spock-TailContext", "2", "3", "Spock-HeadContext"]           | 2     | ["2", "3"]
+        ["1", "Spock-TailContext", "2", "3", "Spock-HeadContext", "1"] | 3     | ["1", "2", "3"]
+
     }
 
     def "Pipeline has expected amount of Interceptors using addBefore"() {
@@ -135,27 +159,35 @@ class PipelineSpecification extends Specification {
             }
         }
         then:
-        println("addBefore ${pipeline.getSize()} == $totalAdded")
-        pipeline.getSize() == totalAdded
+        println("addBefore ${pipeline.getSize()} == $total")
+        println("addBefore $pipeline == ${expected.reverse()}")
+        assert pipeline.getSize() == total
+
+        BaseContext ctx = pipeline.head.next
+        def count = total-1
+        while (ctx != pipeline.tail) {
+            assert ctx.name == expected[count--]
+            ctx = ctx.next
+        }
 
         where:
-        interceptorNames                                               | totalAdded
-        []                                                             | 0
-        ["1"]                                                          | 1
-        ["1", "2", "3", "4", "5", "6", "7"]                            | 7
-        ["1", "2"]                                                     | 2
-        ["1", "1"]                                                     | 1
-        ["1", "1", "1"]                                                | 1
-        ["1", "2", "3", "3", "4", "1", "5", "6", "7", "1"]             | 7
-        ["1", "2", "1", "2"]                                           | 2
-        ["Spock-HeadContext", "2"]                                     | 1
-        ["Spock-HeadContext", "2", "3"]                                | 2
-        ["Spock-HeadContext", "2", "3", "Spock-TailContext"]           | 2
-        ["1", "Spock-HeadContext", "2", "3", "Spock-TailContext", "1"] | 3
-        ["Spock-TailContext", "2"]                                     | 1
-        ["Spock-TailContext", "2", "3"]                                | 2
-        ["Spock-TailContext", "2", "3", "Spock-HeadContext"]           | 2
-        ["1", "Spock-TailContext", "2", "3", "Spock-HeadContext", "1"] | 3
+        interceptorNames                                                | total | expected
+        []                                                             | 0     | []
+        ["1"]                                                          | 1     | ["1"]
+        ["1", "2", "3", "4", "5", "6", "7"]                            | 7     | ["1", "2", "3", "4", "5", "6", "7"]
+        ["1", "2"]                                                     | 2     | ["1", "2"]
+        ["1", "1"]                                                     | 1     | ["1"]
+        ["1", "1", "1"]                                                | 1     | ["1"]
+        ["1", "2", "3", "3", "4", "1", "5", "6", "7", "1"]             | 7     | ["1", "2", "3", "4", "5", "6", "7"]
+        ["1", "2", "1", "2"]                                           | 2     | ["1", "2"]
+        ["Spock-HeadContext", "2"]                                     | 1     | ["2"]
+        ["Spock-HeadContext", "2", "3"]                                | 2     | ["2", "3"]
+        ["Spock-HeadContext", "2", "3", "Spock-TailContext"]           | 2     | ["2", "3"]
+        ["1", "Spock-HeadContext", "2", "3", "Spock-TailContext", "1"] | 3     | ["1", "2", "3"]
+        ["Spock-TailContext", "2"]                                     | 1     | ["2"]
+        ["Spock-TailContext", "2", "3"]                                | 2     | ["2", "3"]
+        ["Spock-TailContext", "2", "3", "Spock-HeadContext"]           | 2     | ["2", "3"]
+        ["1", "Spock-TailContext", "2", "3", "Spock-HeadContext", "1"] | 3     | ["1", "2", "3"]
     }
 
     def "Pipeline has expected amount of Interceptors using remove"() {
@@ -197,8 +229,8 @@ class PipelineSpecification extends Specification {
         }
 
         then:
-        int max = ((interceptorNames.size() - removes <= 0 ) ? 0 : interceptorNames.size() - removes)
-        assert (max >=expectedLeft.size())
+        int max = ((interceptorNames.size() - removes <= 0) ? 0 : interceptorNames.size() - removes)
+        assert (max >= expectedLeft.size())
         println("removeFirst ${pipeline.toString()} == $expectedLeft")
         BaseContext ctx = pipeline.head.next
         def count = 0
@@ -228,8 +260,8 @@ class PipelineSpecification extends Specification {
         }
 
         then:
-        int max = ((interceptorNames.size() - removes <= 0 ) ? 0 : interceptorNames.size() - removes)
-        assert (max >=expectedLeft.size())
+        int max = ((interceptorNames.size() - removes <= 0) ? 0 : interceptorNames.size() - removes)
+        assert (max >= expectedLeft.size())
         println("removeLast ${pipeline.toString()} == $expectedLeft")
         BaseContext ctx = pipeline.head.next
         def count = 0
