@@ -37,7 +37,7 @@ class TailContext(name: String, pipeline: Pipeline) : BaseContext(name, pipeline
     }
 }
 
-class InterceptorContext(name: String, pipeline: Pipeline, private val interceptor: BaseInterceptor) :
+class InterceptorContext(name: String, pipeline: Pipeline, val interceptor: BaseInterceptor) :
     BaseContext(name, pipeline) {
     override fun passOnData(data: Any) {
         try {

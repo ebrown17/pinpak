@@ -172,7 +172,7 @@ class Pipeline(private val pipelineName: String) {
         }
     }
 
-    private fun getContext(name: String): BaseContext? {
+    fun getContext(name: String): BaseContext? {
         var context = head.next
         while (context != tail) {
             if (context.name == name) {
@@ -221,7 +221,7 @@ class Pipeline(private val pipelineName: String) {
     }
 
     fun inject(data: Any) {
-        logger.info("injecting $data at $pipelineName's ${head.name}")
+        logger.trace("injecting $data at $pipelineName's ${head.name}")
         head.passOnData(data)
     }
 
