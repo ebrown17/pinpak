@@ -3,17 +3,18 @@ plugins {
     id 'groovy'
     id 'idea'
     id 'application'
+    id "io.gitlab.arturbosch.detekt" version "1.0.0-RC16"
 }
 
-group 'eb'
-version '1.0-SNAPSHOT'
+group 'pinpak'
+version '0.1'
 
 sourceCompatibility = 1.8
 
 description="Pipeline / Interceptor Pattern Kotlin"
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -24,6 +25,8 @@ dependencies {
 
     testImplementation 'org.spockframework:spock-core:1.2-groovy-2.5'
     testImplementation 'junit:junit:4.12'
+
+   // detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.0.0-RC16"
 }
 
 compileKotlin {
@@ -34,3 +37,16 @@ compileTestKotlin {
 }
 
 mainClassName="pinpak.MainKt"
+
+detekt {
+    
+    input = files("src/main/kotlin")
+    config = files("config/detekt/yaml/pinpak-detekt-config.yml")
+
+    reports {
+        html {
+            enabled = true
+            destination = file("config/detekt/reports/report.html")
+        }
+    }
+}
