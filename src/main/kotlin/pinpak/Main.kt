@@ -6,7 +6,7 @@ import pinpak.core.*
 private val logger = LoggerFactory.getLogger("Main")
 
 fun main() {
-    val tests = Transport.create("TEST2") { config: TransportConfig ->
+    val tests = PinPak.create("TEST2") { config ->
 
         for(i in 0..100){
             config.addInterceptorLast("$i", PassThroughStringInterceptorChecker("$i"))

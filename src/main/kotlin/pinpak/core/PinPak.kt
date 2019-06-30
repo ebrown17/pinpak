@@ -1,11 +1,10 @@
 package pinpak.core
 
-class Transport private constructor(val config: TransportConfig) {
+class PinPak private constructor(val config: PinPakConfig) {
 
     val pipeline: Pipeline = config.pipeline
     val transportName = config.name
     private var ejectionHandler: EjectionHandler? = null
-
 
     init {
         if (config.handleEjections) {
@@ -30,34 +29,44 @@ class Transport private constructor(val config: TransportConfig) {
         pipeline.replace(replaced, newName, interceptor)
     }
 
+    fun removeInterceptor(name:String){
+        pipeline.remove(name)
+    }
+
     private fun catchEjection(name: String, data: Any) {
         ejectionHandler?.handleEjection(name, data)
     }
 
+    fun getInterceptor(name: String):BaseInterceptor? {
+        val context: InterceptorContext? = pipeline.getContext(name) as InterceptorContext?
+        return context?.interceptor
+    }
+
     companion object {
-        /**replaceInterceptor
+        /*
          * Creates a Transport with default values
          */
-        fun create(name: String): Transport {
+        fun create(name: String): PinPak {
             return create(name) { }
         }
-
-        fun create(name: String, config: (TransportConfig) -> Unit): Transport {
-            val userConfig = TransportConfig(name)
+        /*
+         * Creates a Transport with default values
+         */
+        fun create(name: String, config: (PinPakConfig) -> Unit): PinPak {
+            val userConfig = PinPakConfig(name)
             config(userConfig)
-            return Transport(userConfig)
+            return PinPak(userConfig)
         }
     }
 }
 
-
-class EjectionHandler(private val eject: (name: String, Any) -> Unit) {
+open class EjectionHandler(private val eject: (name: String, Any) -> Unit) {
     fun handleEjection(name: String, data: Any) {
         eject(name, data)
     }
 }
 
-class TransportConfig(val name: String) {
+class PinPakConfig(val name: String) {
     val pipeline: Pipeline = Pipeline(name)
     var handleEjections = false
             private set
