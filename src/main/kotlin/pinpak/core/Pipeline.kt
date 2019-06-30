@@ -221,7 +221,6 @@ class Pipeline(private val pipelineName: String) {
     }
 
     fun inject(data: Any) {
-        logger.trace("injecting $data at $pipelineName's ${head.name}")
         head.passOnData(data)
     }
 
