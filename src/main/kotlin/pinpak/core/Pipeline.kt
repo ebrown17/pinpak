@@ -137,11 +137,13 @@ class Pipeline(private val pipelineName: String) {
         if (replaced != newName && isDuplicate(newName)) {
             logger.error("Duplicate BaseInterceptor name: $newName")
         }
-        val context = getContext(replaced)
-        if (context != null) {
-            replace(context, newName, interceptor)
-        } else {
-            logger.error("Context to replace not found with name $replaced")
+        else {
+            val context = getContext(replaced)
+            if (context != null) {
+                replace(context, newName, interceptor)
+            } else {
+                logger.error("Context to replace not found with name $replaced")
+            }
         }
     }
 
@@ -204,17 +206,6 @@ class Pipeline(private val pipelineName: String) {
         return ctx
     }
 
-    fun printAll(): String {
-        var context: BaseContext = head
-        var message = "Context:["
-        while (context !== tail) {
-            message += "[ Ctx: ${context.name} | Prev: ${context.previous.name} Next:${context.next.name}  ]"
-            context = context.next
-        }
-        message += "[ Ctx: ${context.name} |  Prev: ${context.previous.name} Next:${context.next.name}  ]"
-        return "$message]"
-    }
-
     override fun toString(): String {
         var context = head.next
         var message = "Pipeline:["
@@ -238,16 +229,22 @@ class Pipeline(private val pipelineName: String) {
         ejectionHandler?.handleEjection(name, data)
     }
 
+    /**
+     * Registers a handler for any items that pass all the way through the pipeline
+     */
     fun registerEjectionHandler(handler: EjectionHandler) {
         ejectionHandler = handler
     }
 
+    /**
+     * returns the pipeline's head context
+     */
     fun getContext(): BaseContext {
         return head
     }
 
     /**
-     * returns count of interceptors
+     * returns count of pipelines's interceptors
      */
     fun getSize(): Int{
         var count = 0

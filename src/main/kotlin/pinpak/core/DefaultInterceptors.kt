@@ -8,7 +8,7 @@ interface BaseInterceptor {
     fun readData0(context: BaseContext, data: Any)
 }
 
-class PassThroughStringInterceptorChecker(val value:String) : AbstractInterceptor<String>() {
+class PassThroughStringInterceptorChecker(private val value:String) : AbstractInterceptor<String>() {
     private val logger = LoggerFactory.getLogger(PassThroughStringInterceptor::class.java)
     override fun readData(context: BaseContext, data: String) {
         if(value == data){

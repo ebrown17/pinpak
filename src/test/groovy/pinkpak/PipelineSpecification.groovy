@@ -66,14 +66,14 @@ class PipelineSpecification extends Specification {
         assert pipeline.getSize() == total
 
         BaseContext ctx = pipeline.head.next
-        def count = total-1
+        def count = total - 1
         while (ctx != pipeline.tail) {
             assert ctx.name == expected[count--]
             ctx = ctx.next
         }
 
         where:
-        interceptorNames                                                | total | expected
+        interceptorNames                                               | total | expected
         []                                                             | 0     | []
         ["1"]                                                          | 1     | ["1"]
         ["1", "2", "3", "4", "5", "6", "7"]                            | 7     | ["1", "2", "3", "4", "5", "6", "7"]
@@ -122,7 +122,7 @@ class PipelineSpecification extends Specification {
         }
 
         where:
-        interceptorNames                                                | total | expected
+        interceptorNames                                               | total | expected
         []                                                             | 0     | []
         ["1"]                                                          | 1     | ["1"]
         ["1", "2", "3", "4", "5", "6", "7"]                            | 7     | ["1", "2", "3", "4", "5", "6", "7"]
@@ -164,14 +164,14 @@ class PipelineSpecification extends Specification {
         assert pipeline.getSize() == total
 
         BaseContext ctx = pipeline.head.next
-        def count = total-1
+        def count = total - 1
         while (ctx != pipeline.tail) {
             assert ctx.name == expected[count--]
             ctx = ctx.next
         }
 
         where:
-        interceptorNames                                                | total | expected
+        interceptorNames                                               | total | expected
         []                                                             | 0     | []
         ["1"]                                                          | 1     | ["1"]
         ["1", "2", "3", "4", "5", "6", "7"]                            | 7     | ["1", "2", "3", "4", "5", "6", "7"]
@@ -279,4 +279,35 @@ class PipelineSpecification extends Specification {
         ["5", "4", "3", "1", "2"] | 2       | ["5", "4", "3"]
         ["1", "2", "3", "4", "5"] | 5       | []
     }
+
+    def "Pipeline has expected amount of Interceptors using replace"() {
+        given:
+        interceptors.each { name ->
+            pipeline.addLast(name, new PassThroughStringInterceptor())
+        }
+        when:
+        replaces.each { replacer ->
+            pipeline.replace(replacer.o, replacer.n, new PassThroughStringInterceptor())
+        }
+        then:
+        println("replace ${pipeline} == $expectedLeft")
+        BaseContext ctx = pipeline.head.next
+        def count = 0
+        while (ctx != pipeline.tail) {
+            assert ctx.name == expectedLeft[count++]
+            ctx = ctx.next
+        }
+        where:
+        interceptors              | replaces                                                 | expectedLeft
+        []                        | []                                                       | []
+        ["1"]                     | [[o: "1", n: "1"]]                                       | ["1"]
+        ["1", "2"]                | [[o: "1", n: "2"]]                                       | ["1", "2"]
+        ["1", "2", "3", "4", "5"] | [[o: "3", n: "1"]]                     | ["1", "2", "3", "4", "5"]
+        ["1", "2", "3", "4", "5"] | [[o: "5", n: "6"], [o: "1", n: "7"]]                     | ["7", "2", "3", "4", "6"]
+        ["1", "2", "3", "4", "5"] | [[o: "5", n: "0"], [o: "1", n: "5"], [o: "4", n: "1"]
+                                     , [o: "2", n: "4"], [o: "1", n: "2"], [o: "0", n: "1"]] | ["5", "4", "3", "2", "1"]
+
+    }
+
 }
+
