@@ -2,19 +2,9 @@ package pinpak.core
 
 import org.slf4j.LoggerFactory
 
-class Pipeline(private val pipelineName: String) {
+class Pipeline(private val pipelineName: String) : AbstractPipeline(pipelineName) {
 
   private val logger = LoggerFactory.getLogger(Pipeline::class.java)
-
-  private val head: HeadContext = HeadContext("$pipelineName-HeadContext", this)
-  private val tail: TailContext = TailContext("$pipelineName-TailContext", this)
-
-  private var ejectionHandler: EjectionHandler? = null
-
-  init {
-    head.next = tail
-    tail.previous = head
-  }
 
   fun addLast(name: String, interceptor: BaseInterceptor): Boolean {
     return if (isDuplicate(name)) {
@@ -25,7 +15,6 @@ class Pipeline(private val pipelineName: String) {
     }
   }
 
-
   fun addFirst(name: String, interceptor: BaseInterceptor): Boolean {
     return if (isDuplicate(name)) {
       logger.error("Duplicate BaseInterceptor name: $name")
@@ -35,63 +24,35 @@ class Pipeline(private val pipelineName: String) {
     }
   }
 
-  fun addAfter(afterName: String, newName: String, interceptor: BaseInterceptor): Boolean {
+  fun addAfter(after: String, newName: String, interceptor: BaseInterceptor): Boolean {
     return if (isDuplicate(newName)) {
       logger.error("Duplicate BaseInterceptor name: $newName")
       false
     } else {
-      val context = getContext(afterName)
+      val context = getContext(after)
       if (context != null) {
         addAfter(context, newName, interceptor)
       } else {
-        logger.error("Context to add after not found with name $afterName")
+        logger.error("Context to add after not found with name $after")
         false
       }
     }
   }
 
-  fun addBefore(beforeName: String, newName: String, interceptor: BaseInterceptor): Boolean {
+  fun addBefore(before: String, newName: String, interceptor: BaseInterceptor): Boolean {
     return if (isDuplicate(newName)) {
       logger.error("Duplicate BaseInterceptor name: $newName")
       false
     } else {
-      val context = getContext(beforeName)
+      val context = getContext(before)
       if (context != null) {
         addBefore(context, newName, interceptor)
         true
       } else {
-        logger.error("Context to add after not found with name $beforeName")
+        logger.error("Context to add after not found with name $before")
         false
       }
     }
-  }
-
-  private fun addAfter(
-    current: BaseContext,
-    newName: String,
-    interceptor: BaseInterceptor
-  ): Boolean {
-    val newCtx = bindNewContext(newName, interceptor)
-    val after = current.next
-    newCtx.next = after
-    newCtx.previous = current
-    after.previous = newCtx
-    current.next = newCtx
-    return true
-  }
-
-  private fun addBefore(
-    current: BaseContext,
-    newName: String,
-    interceptor: BaseInterceptor
-  ): Boolean {
-    val newCtx = bindNewContext(newName, interceptor)
-    val front = current.previous
-    newCtx.previous = front
-    newCtx.next = current
-    front.next = newCtx
-    current.previous = newCtx
-    return true
   }
 
   fun remove(name: String) {
@@ -111,19 +72,6 @@ class Pipeline(private val pipelineName: String) {
 
     }
   }
-
-  private fun remove(context: BaseContext) {
-    if (context != tail && context != head) {
-      val front = context.previous
-      val back = context.next
-      front.next = back
-      back.previous = front
-
-      context.next = context
-      context.previous = context
-    }
-  }
-
 
   fun removeAll() {
     while (head.next !== tail) {
@@ -153,8 +101,57 @@ class Pipeline(private val pipelineName: String) {
       }
     }
   }
+}
 
-  private fun replace(replaced: BaseContext, newName: String, interceptor: BaseInterceptor) {
+abstract class AbstractPipeline(private val pName: String) {
+
+  protected val head: HeadContext = HeadContext("$pName-HeadContext", this)
+  protected val tail: TailContext = TailContext("$pName-TailContext", this)
+
+  private var ejectionHandler: EjectionHandler? = null
+
+  init {
+    head.next = tail
+    tail.previous = head
+  }
+
+  protected fun addAfter(cur: BaseContext, newName: String, interceptor: BaseInterceptor): Boolean {
+    val newCtx = bindNewContext(newName, interceptor)
+    val after = cur.next
+    newCtx.next = after
+    newCtx.previous = cur
+    after.previous = newCtx
+    cur.next = newCtx
+    return true
+  }
+
+  protected fun addBefore(
+    cur: BaseContext,
+    newName: String,
+    interceptor: BaseInterceptor
+  ): Boolean {
+    val newCtx = bindNewContext(newName, interceptor)
+    val front = cur.previous
+    newCtx.previous = front
+    newCtx.next = cur
+    front.next = newCtx
+    cur.previous = newCtx
+    return true
+  }
+
+  protected fun remove(context: BaseContext) {
+    if (context != tail && context != head) {
+      val front = context.previous
+      val back = context.next
+      front.next = back
+      back.previous = front
+
+      context.next = context
+      context.previous = context
+    }
+  }
+
+  protected fun replace(replaced: BaseContext, newName: String, interceptor: BaseInterceptor) {
     var context = head.next
     while (context != tail) {
       if (context.name == replaced.name) {
@@ -179,21 +176,7 @@ class Pipeline(private val pipelineName: String) {
     }
   }
 
-  fun getContext(name: String): BaseContext? {
-    var context = head.next
-    while (context != tail) {
-      if (context.name == name) {
-        break
-      }
-      context = context.next
-    }
-    if (context != tail) {
-      return context
-    }
-    return null
-  }
-
-  private fun isDuplicate(name: String): Boolean {
+  protected fun isDuplicate(name: String): Boolean {
     var context: BaseContext = head
     while (context != tail) {
       if (context.name == name) {
@@ -204,7 +187,7 @@ class Pipeline(private val pipelineName: String) {
     return (tail.name == name || head.name == name)
   }
 
-  private fun bindNewContext(name: String, interceptor: BaseInterceptor): InterceptorContext {
+  protected fun bindNewContext(name: String, interceptor: BaseInterceptor): InterceptorContext {
     val ctx = InterceptorContext(name, this, interceptor)
     interceptor.name = name
     return ctx
@@ -244,6 +227,20 @@ class Pipeline(private val pipelineName: String) {
    */
   fun getContext(): BaseContext {
     return head
+  }
+
+  fun getContext(name: String): BaseContext? {
+    var context = head.next
+    while (context != tail) {
+      if (context.name == name) {
+        break
+      }
+      context = context.next
+    }
+    if (context != tail) {
+      return context
+    }
+    return null
   }
 
   /**

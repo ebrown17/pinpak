@@ -25,7 +25,7 @@ fun main() {
     })
   }
   var intPool = mutableListOf<Int>()
-  for (i in 0..50000) {
+  for (i in 1..50000) {
     intPool.add(i)
   }
 
@@ -48,9 +48,11 @@ fun main() {
         for (i in intPool) {
           tests.injectData(i)
         }
-        assert(totalRecieved == 50000)
       }
+     // println("$totalRecieved == 50000")
+      //check(totalRecieved == 50000)
       avgTimes.add(duration)
+      Thread.sleep(20)
     }
     println("Run $x  average is ${avgTimes.average()} ms")
   }

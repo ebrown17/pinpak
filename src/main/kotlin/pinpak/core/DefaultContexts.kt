@@ -1,6 +1,6 @@
 package pinpak.core
 
-abstract class BaseContext(val name: String, val pipeline: Pipeline) {
+abstract class BaseContext(val name: String, val pipeline: AbstractPipeline) {
   var next: BaseContext = this
   var previous: BaseContext = this
   abstract fun passOnData(data: Any)
@@ -9,7 +9,7 @@ abstract class BaseContext(val name: String, val pipeline: Pipeline) {
 }
 
 @Suppress("TooGenericExceptionCaught")
-class HeadContext(name: String, pipeline: Pipeline) : BaseContext(name, pipeline) {
+class HeadContext(name: String, pipeline: AbstractPipeline) : BaseContext(name, pipeline) {
   override fun passOnData(data: Any) {
     try {
       next.passOnData(data)
@@ -24,7 +24,7 @@ class HeadContext(name: String, pipeline: Pipeline) : BaseContext(name, pipeline
 }
 
 @Suppress("TooGenericExceptionCaught")
-class TailContext(name: String, pipeline: Pipeline) : BaseContext(name, pipeline) {
+class TailContext(name: String, pipeline: AbstractPipeline) : BaseContext(name, pipeline) {
 
   override fun passOnData(data: Any) {
     try {
@@ -40,7 +40,7 @@ class TailContext(name: String, pipeline: Pipeline) : BaseContext(name, pipeline
 }
 
 @Suppress("TooGenericExceptionCaught")
-class InterceptorContext(name: String, pipeline: Pipeline, val interceptor: BaseInterceptor) :
+class InterceptorContext(name: String, pipeline: AbstractPipeline, val interceptor: BaseInterceptor) :
   BaseContext(name, pipeline) {
 
   override fun passOnData(data: Any) {
