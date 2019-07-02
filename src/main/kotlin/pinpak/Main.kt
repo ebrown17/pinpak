@@ -12,6 +12,7 @@ private val logger = LoggerFactory.getLogger("Main")
 @Suppress("MagicNumber")
 fun main() {
   var totalRecieved = 0
+  val tt = "TTTT"
   val tests = PinPak.create("TEST2") { config ->
 
     for (i in 0..100) {
@@ -22,18 +23,14 @@ fun main() {
       totalRecieved++
     })
   }
-  var intPool = mutableListOf<Int>()
-  for (i in 1..50000) {
-    intPool.add(i)
-  }
 
   println(tests.transportName)
 
-  for (i in intPool) {
-    tests.injectData(i)
+  for (i in  1..50000) {
+    tests.injectData(tt)
   }
-  for (i in intPool) {
-    tests.injectData(i)
+  for (i in  1..50000) {
+    tests.injectData(tt)
   }
 
   println("warm up done")
@@ -42,9 +39,10 @@ fun main() {
     var avgTimes = mutableListOf<Long>()
     for (j in 0..1000) {
       totalRecieved = 0
+      val tts = 55
       var duration = measureTimeMillis {
-        for (i in intPool) {
-          tests.injectData(i)
+        for (i in  1..50000) {
+          tests.injectData(tts)
         }
       }
       // println("$totalRecieved == 50000")
