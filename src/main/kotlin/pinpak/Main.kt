@@ -5,14 +5,12 @@ import pinpak.core.AbstractInterceptor
 import pinpak.core.BaseContext
 import pinpak.core.EjectionHandler
 import pinpak.core.PinPak
-import kotlin.system.measureNanoTime
 import kotlin.system.measureTimeMillis
 
 private val logger = LoggerFactory.getLogger("Main")
 
 @Suppress("MagicNumber")
 fun main() {
-  var warmUpComplete = false
   var totalRecieved = 0
   val tests = PinPak.create("TEST2") { config ->
 
@@ -49,8 +47,8 @@ fun main() {
           tests.injectData(i)
         }
       }
-     // println("$totalRecieved == 50000")
-      //check(totalRecieved == 50000)
+      // println("$totalRecieved == 50000")
+      // check(totalRecieved == 50000)
       avgTimes.add(duration)
       Thread.sleep(20)
     }
@@ -63,9 +61,3 @@ private class PassThroughIntegerInterceptor : AbstractInterceptor<Int>() {
     context.passOnData(data)
   }
 }
-
-
-
-
-
-

@@ -51,5 +51,3 @@ abstract class AbstractInterceptor<I> : BaseInterceptor {
 
   abstract fun readData(context: BaseContext, data: I)
 }
-
-

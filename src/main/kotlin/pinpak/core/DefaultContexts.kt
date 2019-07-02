@@ -5,7 +5,6 @@ abstract class BaseContext(val name: String, val pipeline: AbstractPipeline) {
   var previous: BaseContext = this
   abstract fun passOnData(data: Any)
   abstract fun passOnException(error: Throwable)
-
 }
 
 @Suppress("TooGenericExceptionCaught")
@@ -54,5 +53,4 @@ class InterceptorContext(name: String, pipeline: AbstractPipeline, val intercept
   override fun passOnException(error: Throwable) {
     next.passOnException(error)
   }
-
 }

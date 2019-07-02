@@ -69,7 +69,6 @@ class Pipeline(private val pipelineName: String) : AbstractPipeline(pipelineName
       }
     } else {
       logger.error("Context to remove not found with name $name")
-
     }
   }
 
