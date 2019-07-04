@@ -16,7 +16,7 @@ fun main() {
   val tests = PinPak.create("TEST2") { config ->
 
     for (i in 0..100) {
-      config.addInterceptorLast("$i", PassThroughStrInterceptor())
+      config.addInterceptorLast("$i", PassThroughIntegerInterceptor())
     }
 
     config.addEjectionHandler(EjectionHandler { _, _ ->
@@ -25,23 +25,21 @@ fun main() {
   }
 
   println(tests.transportName)
-
-  for (i in 1..50000) {
-    tests.injectData(tt)
+  for (x in 0..25) {
+    for (i in 1..50000) {
+      tests.injectData(tt)
+    }
   }
-  for (i in 1..50000) {
-    tests.injectData(tt)
-  }
-
   println("warm up done")
+
   println("Average Run times for 50K messages to pass through a pipeline with 100 Interceptors 1000 times")
   for (x in 0..25) {
     var avgTimes = mutableListOf<Long>()
     for (j in 0..1000) {
       totalRecieved = 0
-      val tts = 55
+      val tts = "55"
       var duration = measureTimeMillis {
-        for (i in 1..50000) {
+        for (i in 1..1000) {
           tests.injectData(tts)
         }
       }
@@ -56,12 +54,6 @@ fun main() {
 
 private class PassThroughIntegerInterceptor : AbstractInterceptor<Int>() {
   override fun readData(context: BaseContext, data: Int) {
-    context.passOnData(data)
-  }
-}
-
-private class PassThroughStrInterceptor : AbstractInterceptor<String>() {
-  override fun readData(context: BaseContext, data: String) {
     context.passOnData(data)
   }
 }

@@ -61,12 +61,6 @@ class PinPak private constructor(config: PinPakConfig) {
   }
 }
 
-open class EjectionHandler(private val eject: (name: String, Any) -> Unit) {
-  fun handleEjection(name: String, data: Any) {
-    eject(name, data)
-  }
-}
-
 class PinPakConfig(val name: String) {
   val pipeline: Pipeline = Pipeline(name)
   var handleEjections = false
@@ -85,5 +79,11 @@ class PinPakConfig(val name: String) {
   fun addEjectionHandler(handler: EjectionHandler) {
     handleEjections = true
     ejectionHandler = handler
+  }
+}
+
+open class EjectionHandler(private val eject: (name: String, Any) -> Unit) {
+  fun handleEjection(name: String, data: Any) {
+    eject(name, data)
   }
 }

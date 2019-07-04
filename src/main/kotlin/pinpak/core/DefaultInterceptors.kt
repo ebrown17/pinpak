@@ -23,18 +23,6 @@ abstract class AbstractInterceptor<I> : BaseInterceptor {
   abstract fun readData(context: BaseContext, data: I)
 }
 
-class PassThroughStringInterceptorChecker(private val value: String) :
-  AbstractInterceptor<String>() {
-  private val logger = LoggerFactory.getLogger(PassThroughStringInterceptor::class.java)
-  override fun readData(context: BaseContext, data: String) {
-    if (value == data) {
-      logger.info("[$name] got $data, KEEPING!")
-    } else {
-      context.passOnData(data)
-    }
-  }
-}
-
 class PassThroughStringInterceptor : AbstractInterceptor<String>() {
   private val logger = LoggerFactory.getLogger(PassThroughStringInterceptor::class.java)
   override fun readData(context: BaseContext, data: String) {

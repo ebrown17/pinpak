@@ -187,7 +187,7 @@ abstract class AbstractPipeline(pName: String) {
     return (tail.name == name || head.name == name)
   }
 
-  protected fun bindNewContext(name: String, interceptor: BaseInterceptor): InterceptorContext {
+  private fun bindNewContext(name: String, interceptor: BaseInterceptor): InterceptorContext {
     val ctx = InterceptorContext(name, this, interceptor)
     interceptor.name = name
     return ctx
