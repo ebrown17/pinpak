@@ -38,7 +38,7 @@ class PassThroughStringInterceptorChecker(private val value: String) :
 class PassThroughStringInterceptor : AbstractInterceptor<String>() {
   private val logger = LoggerFactory.getLogger(PassThroughStringInterceptor::class.java)
   override fun readData(context: BaseContext, data: String) {
-    logger.info("[{} got $data passing to [{}]",name,context.name)
+    logger.info("[{} got $data passing to [{}]", name, context.name)
     context.passOnData(data)
   }
 }
@@ -46,7 +46,7 @@ class PassThroughStringInterceptor : AbstractInterceptor<String>() {
 class PassThroughIntegerInterceptor : AbstractInterceptor<Int>() {
   private val logger = LoggerFactory.getLogger(PassThroughIntegerInterceptor::class.java)
   override fun readData(context: BaseContext, data: Int) {
-    logger.info("[{} got $data passing to [{}]",name,context.name)
+    logger.info("[{} got $data passing to [{}]", name, context.name)
     context.passOnData(data)
   }
 }

@@ -1,6 +1,6 @@
 package pinpak.core
 
-class PinPak private constructor(val config: PinPakConfig) {
+class PinPak private constructor(config: PinPakConfig) {
 
   val pipeline: Pipeline = config.pipeline
   val transportName = config.name

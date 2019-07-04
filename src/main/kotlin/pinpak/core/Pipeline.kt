@@ -2,7 +2,7 @@ package pinpak.core
 
 import org.slf4j.LoggerFactory
 
-class Pipeline(private val pipelineName: String) : AbstractPipeline(pipelineName) {
+class Pipeline(pipelineName: String) : AbstractPipeline(pipelineName) {
 
   private val logger = LoggerFactory.getLogger(Pipeline::class.java)
 
@@ -102,7 +102,7 @@ class Pipeline(private val pipelineName: String) : AbstractPipeline(pipelineName
   }
 }
 
-abstract class AbstractPipeline(private val pName: String) {
+abstract class AbstractPipeline(pName: String) {
 
   internal val head: HeadContext = HeadContext("$pName-HeadContext", this)
 
