@@ -104,8 +104,9 @@ class Pipeline(private val pipelineName: String) : AbstractPipeline(pipelineName
 
 abstract class AbstractPipeline(private val pName: String) {
 
-  protected val head: HeadContext = HeadContext("$pName-HeadContext", this)
-  protected val tail: TailContext = TailContext("$pName-TailContext", this)
+  internal val head: HeadContext = HeadContext("$pName-HeadContext", this)
+
+  internal val tail: TailContext = TailContext("$pName-TailContext", this)
 
   private var ejectionHandler: EjectionHandler? = null
 
@@ -224,8 +225,29 @@ abstract class AbstractPipeline(private val pName: String) {
   /**
    * returns the pipeline's head context
    */
-  fun getContext(): BaseContext {
+  fun getHead(): BaseContext {
     return head
+  }
+
+  /**
+   * returns the pipeline's tail context
+   */
+  fun getTail(): BaseContext {
+    return tail
+  }
+
+  /**
+   * returns the pipeline's first context
+   */
+  fun getFirst(): BaseContext {
+    return head.next
+  }
+
+  /**
+   * returns the pipeline's last context
+   */
+  fun getLast(): BaseContext {
+    return tail.previous
   }
 
   fun getContext(name: String): BaseContext? {

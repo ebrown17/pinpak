@@ -26,9 +26,9 @@ class PipelineSpecification extends Specification {
         println("addLast $pipeline == $expected")
         assert pipeline.getSize() == total
 
-        BaseContext ctx = pipeline.head.next
+        BaseContext ctx = pipeline.getFirst()
         def count = 0
-        while (ctx != pipeline.tail) {
+        while (ctx != pipeline.getTail()) {
             assert ctx.name == expected[count++]
             ctx = ctx.next
         }
@@ -65,9 +65,9 @@ class PipelineSpecification extends Specification {
         println("addFirst $pipeline == ${expected.reverse()}")
         assert pipeline.getSize() == total
 
-        BaseContext ctx = pipeline.head.next
+        BaseContext ctx = pipeline.getFirst()
         def count = total - 1
-        while (ctx != pipeline.tail) {
+        while (ctx != pipeline.getTail()) {
             assert ctx.name == expected[count--]
             ctx = ctx.next
         }
@@ -114,9 +114,9 @@ class PipelineSpecification extends Specification {
         println("addAfter $pipeline == $expected")
         assert pipeline.getSize() == total
 
-        BaseContext ctx = pipeline.head.next
+        BaseContext ctx = pipeline.getFirst()
         def count = 0
-        while (ctx != pipeline.tail) {
+        while (ctx != pipeline.getTail()) {
             assert ctx.name == expected[count++]
             ctx = ctx.next
         }
@@ -163,9 +163,9 @@ class PipelineSpecification extends Specification {
         println("addBefore $pipeline == ${expected.reverse()}")
         assert pipeline.getSize() == total
 
-        BaseContext ctx = pipeline.head.next
+        BaseContext ctx = pipeline.getFirst()
         def count = total - 1
-        while (ctx != pipeline.tail) {
+        while (ctx != pipeline.getTail()) {
             assert ctx.name == expected[count--]
             ctx = ctx.next
         }
@@ -232,9 +232,9 @@ class PipelineSpecification extends Specification {
         int max = ((interceptorNames.size() - removes <= 0) ? 0 : interceptorNames.size() - removes)
         assert (max >= expectedLeft.size())
         println("removeFirst ${pipeline.toString()} == $expectedLeft")
-        BaseContext ctx = pipeline.head.next
+        BaseContext ctx = pipeline.getFirst()
         def count = 0
-        while (ctx != pipeline.tail) {
+        while (ctx != pipeline.getTail()) {
             assert ctx.name == expectedLeft[count++]
             ctx = ctx.next
         }
@@ -263,9 +263,9 @@ class PipelineSpecification extends Specification {
         int max = ((interceptorNames.size() - removes <= 0) ? 0 : interceptorNames.size() - removes)
         assert (max >= expectedLeft.size())
         println("removeLast ${pipeline.toString()} == $expectedLeft")
-        BaseContext ctx = pipeline.head.next
+        BaseContext ctx = pipeline.getFirst()
         def count = 0
-        while (ctx != pipeline.tail) {
+        while (ctx != pipeline.getTail()) {
             assert ctx.name == expectedLeft[count++]
             ctx = ctx.next
         }
@@ -291,9 +291,9 @@ class PipelineSpecification extends Specification {
         }
         then:
         println("replace ${pipeline} == $expectedLeft")
-        BaseContext ctx = pipeline.head.next
+        BaseContext ctx = pipeline.getFirst()
         def count = 0
-        while (ctx != pipeline.tail) {
+        while (ctx != pipeline.getTail()) {
             assert ctx.name == expectedLeft[count++]
             ctx = ctx.next
         }
@@ -302,7 +302,7 @@ class PipelineSpecification extends Specification {
         []                        | []                                                       | []
         ["1"]                     | [[o: "1", n: "1"]]                                       | ["1"]
         ["1", "2"]                | [[o: "1", n: "2"]]                                       | ["1", "2"]
-        ["1", "2", "3", "4", "5"] | [[o: "3", n: "1"]]                     | ["1", "2", "3", "4", "5"]
+        ["1", "2", "3", "4", "5"] | [[o: "3", n: "1"]]                                       | ["1", "2", "3", "4", "5"]
         ["1", "2", "3", "4", "5"] | [[o: "5", n: "6"], [o: "1", n: "7"]]                     | ["7", "2", "3", "4", "6"]
         ["1", "2", "3", "4", "5"] | [[o: "5", n: "0"], [o: "1", n: "5"], [o: "4", n: "1"]
                                      , [o: "2", n: "4"], [o: "1", n: "2"], [o: "0", n: "1"]] | ["5", "4", "3", "2", "1"]
