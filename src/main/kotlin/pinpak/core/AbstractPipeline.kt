@@ -7,6 +7,7 @@ abstract class AbstractPipeline(pName: String) {
   internal val tail: TailContext = TailContext("$pName-TailContext", this)
 
   private var ejectionHandler: EjectionHandler? = null
+  private var deliveryHandler: DeliveryHandler? = null
 
   init {
     head.next = tail
@@ -106,18 +107,29 @@ abstract class AbstractPipeline(pName: String) {
   }
 
   fun inject(data: Any) {
-    head.passOnData(data)
+    head.pumpData(data)
   }
 
   fun eject(name: String, data: Any) {
     ejectionHandler?.handleEjection(name, data)
   }
 
+  fun deliver(name: String, data: Any){
+    deliveryHandler?.handleDelivery(name,data)
+  }
+
   /**
-   * Registers a handler for any items that pass all the way through the pipeline
+   * Registers a handler for any exceptions that get ejected through the pipeline
    */
   fun registerEjectionHandler(handler: EjectionHandler) {
     ejectionHandler = handler
+  }
+
+  /**
+   * Registers a handler for any items that pass all the way through the pipeline
+   */
+  fun registerDeliverHandler(handler: DeliveryHandler) {
+    deliveryHandler = handler
   }
 
   /**

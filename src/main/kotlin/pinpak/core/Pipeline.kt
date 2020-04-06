@@ -58,15 +58,7 @@ class Pipeline(pipelineName: String) : AbstractPipeline(pipelineName) {
   fun remove(name: String) {
     val context = getContext(name)
     if (context != null) {
-      if (context != tail && context != head) {
-        val front = context.previous
-        val back = context.next
-        front.next = back
-        back.previous = front
-
-        context.next = context
-        context.previous = context
-      }
+      remove(context)
     } else {
       logger.error("Context to remove not found with name $name")
     }

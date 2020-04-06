@@ -3,6 +3,7 @@ package pinkpak
 import org.jetbrains.annotations.NotNull
 import pinpak.core.AbstractInterceptor
 import pinpak.core.BaseContext
+import pinpak.core.DeliveryHandler
 import pinpak.core.EjectionHandler
 import pinpak.core.PinPak
 import spock.lang.Shared
@@ -394,7 +395,7 @@ class PinPakSpecification extends Specification {
         ["1", "2", "3", "4", "5"] | ["1", "2", "3", "4", "5"] | 25      | 0
     }
 
-    def "Ejection Handler gets all ejections using PinPakConfig"() {
+    def "Delivery Handler gets all data using PinPakConfig"() {
         given:
         def totalEjected = 0
         PinPak transport = PINPAK.create("PinPak", { config ->
@@ -402,7 +403,7 @@ class PinPakSpecification extends Specification {
                 config.addInterceptorFirst(name, new PinPakStringTestInterceptor())
             }
 
-            config.addEjectionHandler( new EjectionHandler({ name,data ->
+            config.addDeliveryHandler( new DeliveryHandler({ name, data ->
                 totalEjected++
             }))
         })
@@ -434,7 +435,7 @@ class PinPakSpecification extends Specification {
         })
 
         interceptors.each { name ->
-            transport.addInterceptorFirst(name, new PinPakStringTestInterceptor())
+            transport.addInterceptorFirst(name, new PinPakStringTestEjectorInterceptor())
         }
 
         when:
@@ -461,7 +462,17 @@ class PinPakSpecification extends Specification {
         @Override
         void readData(@NotNull BaseContext context, String data) {
             receivedMessages++
-            context.passOnData(data)
+            context.pumpData(data)
+        }
+    }
+
+    class PinPakStringTestEjectorInterceptor extends AbstractInterceptor<String> {
+        int receivedMessages = 0
+        def error = new Exception("read data error")
+        @Override
+        void readData(@NotNull BaseContext context, String data) {
+            receivedMessages++
+            context.pumpException(error)
         }
     }
 }

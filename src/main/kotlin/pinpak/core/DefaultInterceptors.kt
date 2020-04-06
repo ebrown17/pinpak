@@ -16,7 +16,7 @@ abstract class AbstractInterceptor<I> : BaseInterceptor {
       @Suppress("UNCHECKED_CAST")
       readData(context, data as I)
     } catch (e: Exception) {
-      context.passOnData(data)
+      context.pumpData(data)
     }
   }
 
@@ -27,7 +27,7 @@ class PassThroughStringInterceptor : AbstractInterceptor<String>() {
   private val logger = LoggerFactory.getLogger(PassThroughStringInterceptor::class.java)
   override fun readData(context: BaseContext, data: String) {
     logger.info("[{} got $data passing to [{}]", name, context.name)
-    context.passOnData(data)
+    context.pumpData(data)
   }
 }
 
@@ -35,6 +35,6 @@ class PassThroughIntegerInterceptor : AbstractInterceptor<Int>() {
   private val logger = LoggerFactory.getLogger(PassThroughIntegerInterceptor::class.java)
   override fun readData(context: BaseContext, data: Int) {
     logger.info("[{} got $data passing to [{}]", name, context.name)
-    context.passOnData(data)
+    context.pumpData(data)
   }
 }

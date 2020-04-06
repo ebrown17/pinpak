@@ -3,23 +3,23 @@ package pinpak.core
 abstract class BaseContext internal constructor(val name: String, val pipeline: AbstractPipeline) {
   var next: BaseContext = this
   var previous: BaseContext = this
-  abstract fun passOnData(data: Any)
-  abstract fun passOnException(error: Throwable)
+  abstract fun pumpData(data: Any)
+  abstract fun pumpException(error: Throwable)
 }
 
 @Suppress("TooGenericExceptionCaught")
 internal class HeadContext internal constructor(name: String, pipeline: AbstractPipeline) :
   BaseContext(name, pipeline) {
-  override fun passOnData(data: Any) {
+  override fun pumpData(data: Any) {
     try {
-      next.passOnData(data)
+      next.pumpData(data)
     } catch (e: Exception) {
-      passOnException(e)
+      pumpException(e)
     }
   }
 
-  override fun passOnException(error: Throwable) {
-    next.passOnException(error)
+  override fun pumpException(error: Throwable) {
+    next.pumpException(error)
   }
 }
 
@@ -27,15 +27,15 @@ internal class HeadContext internal constructor(name: String, pipeline: Abstract
 internal class TailContext internal constructor(name: String, pipeline: AbstractPipeline) :
   BaseContext(name, pipeline) {
 
-  override fun passOnData(data: Any) {
+  override fun pumpData(data: Any) {
     try {
-      pipeline.eject(name, data)
+      pipeline.deliver(name, data)
     } catch (e: Exception) {
-      passOnException(e)
+      pumpException(e)
     }
   }
 
-  override fun passOnException(error: Throwable) {
+  override fun pumpException(error: Throwable) {
     pipeline.eject(name, error)
   }
 }
@@ -48,15 +48,15 @@ class InterceptorContext(
 ) :
   BaseContext(name, pipeline) {
 
-  override fun passOnData(data: Any) {
+  override fun pumpData(data: Any) {
     try {
       interceptor.readData0(next, data)
     } catch (e: Exception) {
-      passOnException(e)
+      pumpException(e)
     }
   }
 
-  override fun passOnException(error: Throwable) {
-    next.passOnException(error)
+  override fun pumpException(error: Throwable) {
+    next.pumpException(error)
   }
 }

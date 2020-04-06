@@ -5,11 +5,17 @@ class PinPak private constructor(config: PinPakConfig) {
   val pipeline: Pipeline = config.pipeline
   val transportName = config.name
   private var ejectionHandler: EjectionHandler? = null
+  private var deliveryHandler: DeliveryHandler? = null
 
   init {
     if (config.handleEjections) {
       ejectionHandler = config.ejectionHandler
       pipeline.registerEjectionHandler(ejectionHandler!!)
+
+    }
+    if(config.handleDeliveries){
+      deliveryHandler = config.deliveryHandler
+      pipeline.registerDeliverHandler(deliveryHandler!!)
     }
   }
 
@@ -35,6 +41,10 @@ class PinPak private constructor(config: PinPakConfig) {
 
   private fun catchEjection(name: String, data: Any) {
     ejectionHandler?.handleEjection(name, data)
+  }
+
+  private fun deliverData(name: String,data: Any){
+    deliveryHandler?.handleDelivery(name,data)
   }
 
   fun getInterceptor(name: String): BaseInterceptor? {
@@ -67,6 +77,9 @@ class PinPakConfig(val name: String) {
     private set
   lateinit var ejectionHandler: EjectionHandler
     private set
+  var handleDeliveries = false
+  lateinit var deliveryHandler: DeliveryHandler
+    private set
 
   fun addInterceptorFirst(name: String, interceptor: BaseInterceptor) {
     pipeline.addFirst(name, interceptor)
@@ -80,10 +93,21 @@ class PinPakConfig(val name: String) {
     handleEjections = true
     ejectionHandler = handler
   }
+
+  fun addDeliveryHandler(handler: DeliveryHandler){
+    handleDeliveries = true
+    deliveryHandler = handler
+  }
 }
 
 open class EjectionHandler(private val eject: (name: String, Any) -> Unit) {
   fun handleEjection(name: String, data: Any) {
     eject(name, data)
+  }
+}
+
+open class DeliveryHandler(private val deliver: (name: String, Any) -> Unit) {
+  fun handleDelivery(name: String, data: Any) {
+    deliver(name, data)
   }
 }
