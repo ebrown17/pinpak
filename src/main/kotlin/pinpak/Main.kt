@@ -9,10 +9,13 @@ private val logger = LoggerFactory.getLogger("Main")
 
 @Suppress("MagicNumber")
 fun main() {
+  stress()
+}
 
-  val pipeline = PinPak.create("tester"){ config ->
+private fun testEjectAndDel() {
+  val pipeline = PinPak.create("tester") { config ->
 
-    config.addDeliveryHandler(DeliveryHandler {name,data ->
+    config.addDeliveryHandler(DeliveryHandler { name, data ->
       println("$name delivered $data")
     })
 
@@ -21,18 +24,15 @@ fun main() {
     })
 
     config.addInterceptorLast("one", PassThroughIntegerInterceptor())
-
   }
 
   pipeline.injectData("test 1")
   pipeline.injectData(1)
 
   sleep(5000)
-
 }
 
-
-private fun stress(){
+private fun stress() {
   var totalRecieved = 0
   val tt = "TTTT"
   val tests = PinPak.create("stress") { config ->
@@ -55,11 +55,12 @@ private fun stress(){
   println("${tests.transportName} warm up done")
 
   println("Average Run times for 1K messages to pass through a pipeline with 100 Interceptors 1000 times")
+  val tts = "55"
   for (x in 0..25) {
     var avgTimes = mutableListOf<Long>()
     for (j in 0..1000) {
       totalRecieved = 0
-      val tts = "55"
+
       var duration = measureTimeMillis {
         for (i in 1..1000) {
           tests.injectData(tts)

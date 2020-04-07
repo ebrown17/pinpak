@@ -3,7 +3,8 @@
 
 *.log
 *.log.*
-*.report.html
+*report.*
+
 
 ### Intellij+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm

@@ -114,8 +114,8 @@ abstract class AbstractPipeline(pName: String) {
     ejectionHandler?.handleEjection(name, data)
   }
 
-  fun deliver(name: String, data: Any){
-    deliveryHandler?.handleDelivery(name,data)
+  fun deliver(name: String, data: Any) {
+    deliveryHandler?.handleDelivery(name, data)
   }
 
   /**

@@ -11,9 +11,8 @@ class PinPak private constructor(config: PinPakConfig) {
     if (config.handleEjections) {
       ejectionHandler = config.ejectionHandler
       pipeline.registerEjectionHandler(ejectionHandler!!)
-
     }
-    if(config.handleDeliveries){
+    if (config.handleDeliveries) {
       deliveryHandler = config.deliveryHandler
       pipeline.registerDeliverHandler(deliveryHandler!!)
     }
@@ -43,8 +42,8 @@ class PinPak private constructor(config: PinPakConfig) {
     ejectionHandler?.handleEjection(name, data)
   }
 
-  private fun deliverData(name: String,data: Any){
-    deliveryHandler?.handleDelivery(name,data)
+  private fun deliverData(name: String, data: Any) {
+    deliveryHandler?.handleDelivery(name, data)
   }
 
   fun getInterceptor(name: String): BaseInterceptor? {
@@ -94,18 +93,28 @@ class PinPakConfig(val name: String) {
     ejectionHandler = handler
   }
 
-  fun addDeliveryHandler(handler: DeliveryHandler){
+  fun addDeliveryHandler(handler: DeliveryHandler) {
     handleDeliveries = true
     deliveryHandler = handler
   }
 }
 
+/**
+ * The Ejection Handler is used for catching exceptions or errors in the pipeline.
+ *
+ * The Ejection Handler will also catch items that reach the end of the pipeline that are not intercepted.
+ */
 open class EjectionHandler(private val eject: (name: String, Any) -> Unit) {
   fun handleEjection(name: String, data: Any) {
     eject(name, data)
   }
 }
 
+/**
+ * The Delivery Handler is used for handling all data that passes through the pipeline that is not in error.
+ *
+ * Interceptors are not required to pass data through the pipeline, so this handler can't guarantee receiving all data.
+ */
 open class DeliveryHandler(private val deliver: (name: String, Any) -> Unit) {
   fun handleDelivery(name: String, data: Any) {
     deliver(name, data)

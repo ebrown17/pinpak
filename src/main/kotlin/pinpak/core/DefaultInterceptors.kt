@@ -16,7 +16,11 @@ abstract class AbstractInterceptor<I> : BaseInterceptor {
       @Suppress("UNCHECKED_CAST")
       readData(context, data as I)
     } catch (e: Exception) {
-      context.pumpData(data)
+      if (context.next != context.pipeline.tail) {
+        context.pumpData(data)
+      } else {
+        context.pumpException(e)
+      }
     }
   }
 
