@@ -14,7 +14,6 @@ class MyFirstTestClass : FunSpec({
     test("my first test") {
         1 + 2 shouldBe 3
     }
-
 })
 
 class NestedTestExamples : DescribeSpec({
@@ -29,7 +28,6 @@ class NestedTestExamples : DescribeSpec({
             3 + 4 shouldBe 7
         }
     }
-
 })
 
 class DynamicTests : FunSpec({
@@ -69,7 +67,6 @@ class MyTests : StringSpec({
 })
 
 class InstanceTestExample : WordSpec() {
-
 
     val counter = AtomicInteger(0)
 

@@ -6,7 +6,7 @@ dependencies{
     implementation libs.kotlin.coroutines_core
     implementation libs.slf4j
 
-    testImplementation libs.slf4jnop
+    testImplementation libs.logback
     testImplementation libs.kotest.junit5
     testImplementation libs.kotest.assertions
     testImplementation libs.kotest.property
