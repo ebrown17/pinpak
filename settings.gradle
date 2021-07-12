@@ -1,2 +1,6 @@
-rootProject.name = 'pinpak'
+rootProject.name = 'pinpak-parent'
 
+include ':pinpak'
+include ':examples:deliveryHandler'
+include ':examples:example2'
+include ':examples:example3'
