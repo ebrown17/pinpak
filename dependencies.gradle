@@ -26,7 +26,8 @@ ext {
             'kotest'    : [
                     'junit5' : "io.kotest:kotest-runner-junit5:$kotestVersion",
                     'assertions' : "io.kotest:kotest-assertions-core:$kotestVersion",
-                    'property' : "io.kotest:kotest-property:$kotestVersion"
+                    'property' : "io.kotest:kotest-property:$kotestVersion",
+                    'datatest' : "io.kotest:kotest-framework-datatest:$kotestVersion"
             ]
     ]
 

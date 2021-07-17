@@ -1,4 +1,4 @@
-package template
+package pinpak
 
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
