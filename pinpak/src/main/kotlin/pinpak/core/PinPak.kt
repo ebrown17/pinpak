@@ -73,7 +73,7 @@ class PinPak private constructor(config: PinPakConfig) {
 }
 
 class PinPakConfig(val name: String) {
-    val logger = logger(this)
+    private val logger = logger(this)
     val pipeline: Pipeline = Pipeline(name)
     var handleEjections = false
         private set
