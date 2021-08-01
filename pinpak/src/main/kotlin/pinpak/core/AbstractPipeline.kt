@@ -1,7 +1,10 @@
 package pinpak.core
 
+import pinpak.logger
+
 abstract class AbstractPipeline(pName: String) {
 
+    private val logger = logger(this)
     internal val head: HeadContext = HeadContext("$pName-HeadContext", this)
 
     internal val tail: TailContext = TailContext("$pName-TailContext", this)
@@ -111,11 +114,22 @@ abstract class AbstractPipeline(pName: String) {
     }
 
     fun eject(name: String, data: Any, error: Throwable) {
-        ejectionHandler?.handleEjection(name, data, error)
+        if(ejectionHandler != null){
+            ejectionHandler!!.handleEjection(name, data, error)
+        }
+        else {
+            logger.error("{} reached end of {} pipeline without being caught; with {}",data,name,error)
+        }
     }
 
     fun deliver(name: String, data: Any) {
-        deliveryHandler?.handleDelivery(name, data)
+        if(deliveryHandler != null){
+            deliveryHandler!!.handleDelivery(name, data)
+        }
+        else{
+            ejectionHandler?.handleEjection(name, data, Throwable("Reached end of pipeline; without being intercepted or delivered"))
+        }
+
     }
 
     /**

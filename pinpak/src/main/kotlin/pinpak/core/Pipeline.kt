@@ -1,10 +1,11 @@
 package pinpak.core
 
-import org.slf4j.LoggerFactory
+import pinpak.logger
+
 
 class Pipeline(pipelineName: String) : AbstractPipeline(pipelineName) {
 
-    private val logger = LoggerFactory.getLogger(Pipeline::class.java)
+     private val logger = logger(this)
 
     fun addLast(name: String, interceptor: BaseInterceptor): Boolean {
         return if (isDuplicate(name)) {
