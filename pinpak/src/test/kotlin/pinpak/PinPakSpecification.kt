@@ -17,7 +17,7 @@ class PassThroughIntegerInterceptorTest : AbstractInterceptor<Int>() {
 }
 
 class InterceptorAddTest  : StringSpec({
-    val logger = logger(this)
+    val logger = logger(InterceptorAddTest::class.java)
 
     "All interceptors added in PinPakConfig receive all messages" {
         forAll(
@@ -52,7 +52,7 @@ class InterceptorAddTest  : StringSpec({
 })
 
 class InterceptorReplaceTest  : StringSpec({
-    val logger = logger(this)
+    val logger = logger(InterceptorReplaceTest::class.java)
 
     "Interceptors are added, injected and replaced correctly with PinPakConfig" {
         forAll(
@@ -106,14 +106,14 @@ class InterceptorReplaceTest  : StringSpec({
 
             val answer = (interceptorNames.size - (replacementNames.size)) * totalMessages
 
-            logger.info("InterceptorReplaceTest $received shouldBe $answer")
+            logger.info("$received shouldBe $answer")
             received shouldBe answer
         }
     }
 })
 
 class InterceptorReplaceInjectTest  : StringSpec({
-    val logger = logger(this)
+    val logger = logger(InterceptorReplaceInjectTest::class.java)
 
     "Interceptors are added, replaced and injected correctly with PinPakConfig" {
         forAll(
@@ -175,7 +175,7 @@ class InterceptorReplaceInjectTest  : StringSpec({
 })
 
 class InterceptorRemoveTest  : StringSpec({
-    val logger = logger(this)
+    val logger = logger(InterceptorRemoveTest::class.java)
 
     "Interceptors are added, removed and injected correctly with PinPakConfig" {
         forAll(
@@ -218,7 +218,7 @@ class InterceptorRemoveTest  : StringSpec({
 })
 
 class DeliveryHandlerTest  : StringSpec({
-    val logger = logger(this)
+    val logger = logger(DeliveryHandlerTest::class.java)
 
     "Delivery Handler gets all data with PinPakConfig" {
         forAll(
@@ -231,7 +231,7 @@ class DeliveryHandlerTest  : StringSpec({
 
             var totalDelivered = 0
 
-            val integerPipeline = PinPak.create("InterceptorRemoveTest") { config ->
+            val integerPipeline = PinPak.create("DeliveryHandlerTest") { config ->
                 interceptorNames.forEach { name ->
                     config.addInterceptorLast(name, PassThroughIntegerInterceptorTest())
                 }
@@ -252,7 +252,7 @@ class DeliveryHandlerTest  : StringSpec({
 })
 
 class EjectionHandlerTest  : StringSpec({
-    val logger = logger(this)
+    val logger = logger(EjectionHandlerTest::class.java)
 
     "Ejection Handler gets all data with PinPakConfig" {
         forAll(
@@ -265,7 +265,7 @@ class EjectionHandlerTest  : StringSpec({
 
             var totalEjected = 0
 
-            val integerPipeline = PinPak.create("InterceptorRemoveTest") { config ->
+            val integerPipeline = PinPak.create("EjectionHandlerTest") { config ->
                 interceptorNames.forEach { name ->
                     config.addInterceptorLast(name, PassThroughIntegerInterceptorTest())
                 }
