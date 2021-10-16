@@ -26,11 +26,9 @@ class PipelineInterceptorTest  : StringSpec({
 
             val stringPipeline = PinPak.create("PipelineInterceptorTest")
 
-
             interceptorNames.forEach { name ->
                stringPipeline.pipeline.addLast(name, PassThroughStringInterceptor())
             }
-
 
             logger.info("pipeline size: ${stringPipeline.pipeline.getSize()} shouldBe $total")
             stringPipeline.pipeline.getSize() shouldBe total
