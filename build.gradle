@@ -24,11 +24,25 @@ allprojects {
         mavenCentral()
     }
 
+    dependencies {
+        implementation libs.kotlin.stdlib_jdk8
+    }
+
     compileKotlin {
         kotlinOptions.jvmTarget = jvmTargetVersion
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = jvmTargetVersion
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
 }
 
 wrapper {

@@ -2,7 +2,6 @@ apply plugin: "org.jlleitschuh.gradle.ktlint"
 apply plugin: 'kotlin'
 
 dependencies{
-    implementation libs.kotlin.stdlib_jdk8
     implementation libs.kotlin.coroutines_core
     implementation libs.slf4j
 
@@ -10,16 +9,7 @@ dependencies{
     testImplementation libs.kotest.junit5
     testImplementation libs.kotest.assertions
     testImplementation libs.kotest.property
-}
 
-compileTestKotlin {
-    kotlinOptions.jvmTarget = jvmTargetVersion
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-test {
-    useJUnitPlatform()
 }
 
 detekt {
