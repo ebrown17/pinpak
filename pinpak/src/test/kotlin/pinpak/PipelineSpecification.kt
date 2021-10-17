@@ -268,3 +268,94 @@ class PipelineInterceptorRemoveFirstTest  : StringSpec({
         }
     }
 })
+
+class PipelineInterceptorRemoveLastTest  : StringSpec({
+    val logger = logger(PipelineInterceptorRemoveLastTest::class.java)
+
+    "Pipeline has expected amount and order of Interceptors after using remove" {
+        forAll(
+            row(5, arrayOf(), arrayOf()),
+            row(0, arrayOf("1"), arrayOf("1")),
+            row(1, arrayOf("1","2"), arrayOf("1")),
+            row(2, arrayOf("1","2","3","4","5"), arrayOf("1","2","3")),
+            row(3, arrayOf("5","4","3","2","1"), arrayOf("5","4")),
+            row(5, arrayOf("1","2","3","4","5"), arrayOf()),
+        ) {removes, interceptorNames,  interceptorsRemaining ->
+
+            val stringPipeline = PinPak.create("PipelineInterceptorTest")
+
+            interceptorNames.forEach { name ->
+                stringPipeline.pipeline.addLast(name, PassThroughStringInterceptor())
+            }
+
+            for( i in 1..removes){
+                stringPipeline.pipeline.removeLast()
+            }
+
+            val remaining = if (interceptorNames.size - removes <= 0)  0 else interceptorNames.size - removes
+            remaining shouldBe interceptorsRemaining.size
+
+            var context = stringPipeline.pipeline.getFirst()
+
+            var count =0
+            var nameMatches = ""
+            while(context != stringPipeline.pipeline.getTail()){
+                nameMatches += "${context.name} shouldBe ${interceptorsRemaining[count]}"
+                context.name shouldBe interceptorsRemaining[count++]
+                context = context.next
+                if(context != stringPipeline.pipeline.getTail()){
+                    nameMatches += " | "
+                }
+            }
+            logger.info("pipeline size: {} shouldBe {} :: names: {}",stringPipeline.pipeline.getSize(),remaining, nameMatches)
+
+
+        }
+    }
+})
+
+data class Replacer(val old:String,val new:String)
+
+class PipelineInterceptorReplaceTest  : StringSpec({
+    val logger = logger(PipelineInterceptorReplaceTest::class.java)
+
+    "Pipeline has expected amount and order of Interceptors after using replace" {
+        forAll(
+            row(arrayOf(), arrayOf(), arrayOf()),
+            row(arrayOf("1"), arrayOf(Replacer("1","1")), arrayOf("1")),
+            row(arrayOf("1","2","3","4","5"), arrayOf(Replacer("3","1")),arrayOf("1","2","3","4","5")),
+            row(arrayOf("1","2","3","4","5"), arrayOf(Replacer("5","6")),arrayOf("1","2","3","4","6")),
+            row(arrayOf("1","2","3","4","5"), arrayOf(Replacer("1","6"),Replacer("3","7")),arrayOf("6","2","7","4","5")),
+            row(arrayOf("1","2","3","4","5"), arrayOf(Replacer("1","7"),Replacer("5","1"),Replacer("3","5")),arrayOf("7","2","5","4","1")),
+            row(arrayOf("1","2","3","4","5"), arrayOf(Replacer("2","7"),Replacer("7","2"),Replacer("2","10")),arrayOf("1","10","3","4","5")),
+        ) {interceptorNames, interceptorReplacers,  interceptorsRemaining ->
+
+            val stringPipeline = PinPak.create("PipelineInterceptorTest")
+
+            interceptorNames.forEach { name ->
+                stringPipeline.pipeline.addLast(name, PassThroughStringInterceptor())
+            }
+
+            interceptorReplacers.forEach { replacer ->
+                stringPipeline.replaceInterceptor(replacer.old,replacer.new,PassThroughStringInterceptor())
+            }
+
+            stringPipeline.pipeline.getSize() shouldBe interceptorsRemaining.size
+
+            var context = stringPipeline.pipeline.getFirst()
+            var count =0
+            var nameMatches = ""
+            while(context != stringPipeline.pipeline.getTail()){
+                nameMatches += "${context.name} shouldBe ${interceptorsRemaining[count]}"
+                context.name shouldBe interceptorsRemaining[count++]
+                context = context.next
+                if(context != stringPipeline.pipeline.getTail()){
+                    nameMatches += " | "
+                }
+            }
+            logger.info("pipeline size: {} shouldBe {} :: names: {}",stringPipeline.pipeline.getSize(),interceptorsRemaining.size, nameMatches)
+
+
+        }
+    }
+})

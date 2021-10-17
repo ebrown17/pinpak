@@ -12,6 +12,17 @@ dependencies{
 
 }
 
+compileTestKotlin {
+    kotlinOptions.jvmTarget = jvmTargetVersion
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+test {
+    useJUnitPlatform()
+}
+
+
 detekt {
     input = files("src/main/kotlin")
     parallel = true
