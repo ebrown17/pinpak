@@ -7,10 +7,10 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import pinpak.core.*
 
-class PipelineInterceptorTest  : StringSpec({
-    val logger = logger(PipelineInterceptorTest::class.java)
+class PipelineInterceptorAddLastTest  : StringSpec({
+    val logger = logger(PipelineInterceptorAddLastTest::class.java)
 
-    "Pipeline has expected amount of Interceptors using addLast" {
+    "Pipeline has expected amount and order of Interceptors using addLast" {
         forAll(
             row(0, arrayOf(), arrayOf()),
             row(1, arrayOf("1"), arrayOf("1")),
@@ -30,17 +30,241 @@ class PipelineInterceptorTest  : StringSpec({
                stringPipeline.pipeline.addLast(name, PassThroughStringInterceptor())
             }
 
-            logger.info("pipeline size: ${stringPipeline.pipeline.getSize()} shouldBe $total")
             stringPipeline.pipeline.getSize() shouldBe total
 
             var context = stringPipeline.pipeline.getFirst()
 
             var count = 0
+            var nameMatches = ""
             while(context != stringPipeline.pipeline.getTail()){
-                logger.info("context name: ${context.name} shouldBe ${expectedNames[count]}")
+                nameMatches += "${context.name} shouldBe ${expectedNames[count]}"
                 context.name shouldBe expectedNames[count++]
                 context = context.next
+                if(context != stringPipeline.pipeline.getTail()){
+                    nameMatches += " | "
+                }
             }
+            logger.info("pipeline size: {} shouldBe {} :: names: {}",stringPipeline.pipeline.getSize(),total, nameMatches)
+        }
+    }
+})
+
+class PipelineInterceptorAddFirstTest  : StringSpec({
+    val logger = logger(PipelineInterceptorAddFirstTest::class.java)
+
+    "Pipeline has expected amount and order of Interceptors using addFirst" {
+        forAll(
+            row(0, arrayOf(), arrayOf()),
+            row(1, arrayOf("1"), arrayOf("1")),
+            row(2, arrayOf("1","2"), arrayOf("1","2")),
+            row(1, arrayOf("1","1"), arrayOf("1")),
+            row(1, arrayOf("1","1","1"), arrayOf("1")),
+            row(2, arrayOf("1","1","2","2"), arrayOf("1","2")),
+            row(2, arrayOf("1","PipelineInterceptorTest-HeadContext","2"), arrayOf("1","2")),
+            row(2, arrayOf("1","PipelineInterceptorTest-TailContext","2"), arrayOf("1","2")),
+            row(2, arrayOf("1","PipelineInterceptorTest-HeadContext","PipelineInterceptorTest-TailContext","2"), arrayOf("1","2")),
+            row(7, arrayOf("1","2","3","4","5","6","7"), arrayOf("1","2","3","4","5","6","7")),
+        ) {total, interceptorNames, expectedNames ->
+
+            val stringPipeline = PinPak.create("PipelineInterceptorTest")
+
+            interceptorNames.forEach { name ->
+                stringPipeline.pipeline.addFirst(name, PassThroughStringInterceptor())
+            }
+
+            stringPipeline.pipeline.getSize() shouldBe total
+
+            var context = stringPipeline.pipeline.getFirst()
+
+            var count = total - 1
+            var nameMatches = ""
+            while(context != stringPipeline.pipeline.getTail()){
+                nameMatches += "${context.name} shouldBe ${expectedNames[count]}"
+                context.name shouldBe expectedNames[count--]
+                context = context.next
+                if(context != stringPipeline.pipeline.getTail()){
+                    nameMatches += " | "
+                }
+            }
+            logger.info("pipeline size: {} shouldBe {} :: names: {}",stringPipeline.pipeline.getSize(),total, nameMatches)
+        }
+    }
+})
+
+class PipelineInterceptorAddAfterTest  : StringSpec({
+    val logger = logger(PipelineInterceptorAddAfterTest::class.java)
+
+    "Pipeline has expected amount and order of Interceptors using addAfter" {
+        forAll(
+            row(0, arrayOf(), arrayOf()),
+            row(1, arrayOf("1"), arrayOf("1")),
+            row(2, arrayOf("1","2"), arrayOf("1","2")),
+            row(1, arrayOf("1","1"), arrayOf("1")),
+            row(1, arrayOf("1","1","1"), arrayOf("1")),
+            row(2, arrayOf("1","1","2","2"), arrayOf("1","2")),
+            row(2, arrayOf("1","PipelineInterceptorTest-HeadContext","2"), arrayOf("1","2")),
+            row(2, arrayOf("1","PipelineInterceptorTest-TailContext","2"), arrayOf("1","2")),
+            row(2, arrayOf("1","PipelineInterceptorTest-HeadContext","PipelineInterceptorTest-TailContext","2"), arrayOf("1","2")),
+            row(7, arrayOf("1","2","3","4","5","6","7"), arrayOf("1","2","3","4","5","6","7")),
+        ) {total, interceptorNames, expectedNames ->
+
+            val stringPipeline = PinPak.create("PipelineInterceptorTest")
+            var prevName = ""
+            interceptorNames.forEachIndexed { index, name ->
+                if(index == 0){
+                    if(stringPipeline.pipeline.addFirst(name, PassThroughStringInterceptor())){
+                        prevName = name
+                    }
+                }
+                else{
+                    if(stringPipeline.pipeline.addAfter(prevName,name, PassThroughStringInterceptor())){
+                        prevName = name
+                    }
+                }
+            }
+
+            stringPipeline.pipeline.getSize() shouldBe total
+
+            var context = stringPipeline.pipeline.getFirst()
+
+            var count =0
+            var nameMatches = ""
+            while(context != stringPipeline.pipeline.getTail()){
+                nameMatches += "${context.name} shouldBe ${expectedNames[count]}"
+                context.name shouldBe expectedNames[count++]
+                context = context.next
+                if(context != stringPipeline.pipeline.getTail()){
+                    nameMatches += " | "
+                }
+            }
+            logger.info("pipeline size: {} shouldBe {} :: names: {}",stringPipeline.pipeline.getSize(),total, nameMatches)
+        }
+    }
+})
+
+class PipelineInterceptorAddBeforeTest  : StringSpec({
+    val logger = logger(PipelineInterceptorAddBeforeTest::class.java)
+
+    "Pipeline has expected amount and order of Interceptors using addBefore" {
+        forAll(
+            row(0, arrayOf(), arrayOf()),
+            row(1, arrayOf("1"), arrayOf("1")),
+            row(2, arrayOf("1","2"), arrayOf("1","2")),
+            row(1, arrayOf("1","1"), arrayOf("1")),
+            row(1, arrayOf("1","1","1"), arrayOf("1")),
+            row(2, arrayOf("1","1","2","2"), arrayOf("1","2")),
+            row(2, arrayOf("1","PipelineInterceptorTest-HeadContext","2"), arrayOf("1","2")),
+            row(2, arrayOf("1","PipelineInterceptorTest-TailContext","2"), arrayOf("1","2")),
+            row(2, arrayOf("1","PipelineInterceptorTest-HeadContext","PipelineInterceptorTest-TailContext","2"), arrayOf("1","2")),
+            row(7, arrayOf("1","2","3","4","5","6","7"), arrayOf("1","2","3","4","5","6","7")),
+        ) {total, interceptorNames, expectedNames ->
+
+            val stringPipeline = PinPak.create("PipelineInterceptorTest")
+            var prevName = ""
+            interceptorNames.forEachIndexed { index, name ->
+                if(index == 0){
+                    if(stringPipeline.pipeline.addFirst(name, PassThroughStringInterceptor())){
+                        prevName = name
+                    }
+                }
+                else{
+                    if(stringPipeline.pipeline.addBefore(prevName,name, PassThroughStringInterceptor())){
+                        prevName = name
+                    }
+                }
+            }
+
+            stringPipeline.pipeline.getSize() shouldBe total
+
+            var context = stringPipeline.pipeline.getFirst()
+
+            var count = total -1
+            var nameMatches = ""
+            while(context != stringPipeline.pipeline.getTail()){
+                nameMatches += "${context.name} shouldBe ${expectedNames[count]}"
+                context.name shouldBe expectedNames[count--]
+                context = context.next
+                if(context != stringPipeline.pipeline.getTail()){
+                    nameMatches += " | "
+                }
+            }
+            logger.info("pipeline size: {} shouldBe {} :: names: {}",stringPipeline.pipeline.getSize(),total, nameMatches)
+        }
+    }
+})
+
+class PipelineInterceptorRemoveTest  : StringSpec({
+    val logger = logger(PipelineInterceptorRemoveTest::class.java)
+
+    "Pipeline has expected amount and order of Interceptors after using remove" {
+        forAll(
+            row(0, arrayOf(), arrayOf()),
+            row(0, arrayOf(), arrayOf("1")),
+            row(0, arrayOf("1"), arrayOf("1")),
+            row(1, arrayOf("1","2"), arrayOf("1")),
+            row(3, arrayOf("1","2","3","4","5"), arrayOf("5","1")),
+            row(1, arrayOf("1","2","3","4","5"), arrayOf("5","1","3","2","5")),
+            row(1, arrayOf("1","PipelineInterceptorTest-HeadContext"), arrayOf("PipelineInterceptorTest-HeadContext")),
+            row(3, arrayOf("1","PipelineInterceptorTest-TailContext","2","3"), arrayOf("PipelineInterceptorTest-TailContext")),
+
+        ) {total, interceptorNames, removeNames ->
+
+            val stringPipeline = PinPak.create("PipelineInterceptorTest")
+
+            interceptorNames.forEach { name ->
+                stringPipeline.pipeline.addLast(name, PassThroughStringInterceptor())
+            }
+
+            removeNames.forEach { name -> stringPipeline.removeInterceptor(name) }
+
+            stringPipeline.pipeline.getSize() shouldBe total
+
+            logger.info("pipeline size: {} shouldBe {} ",stringPipeline.pipeline.getSize(),total)
+        }
+    }
+})
+
+class PipelineInterceptorRemoveFirstTest  : StringSpec({
+    val logger = logger(PipelineInterceptorRemoveFirstTest::class.java)
+
+    "Pipeline has expected amount and order of Interceptors after using remove" {
+        forAll(
+            row(5, arrayOf(), arrayOf()),
+            row(0, arrayOf("1"), arrayOf("1")),
+            row(1, arrayOf("1","2"), arrayOf("2")),
+            row(2, arrayOf("1","2","3","4","5"), arrayOf("3","4","5")),
+            row(2, arrayOf("5","4","3","2","1"), arrayOf("3","2","1")),
+            row(5, arrayOf("1","2","3","4","5"), arrayOf()),
+            ) {removes, interceptorNames,  interceptorsRemaining ->
+
+            val stringPipeline = PinPak.create("PipelineInterceptorTest")
+
+            interceptorNames.forEach { name ->
+                stringPipeline.pipeline.addLast(name, PassThroughStringInterceptor())
+            }
+
+            for( i in 1..removes){
+                stringPipeline.pipeline.removeFirst()
+            }
+
+            val remaining = if (interceptorNames.size - removes <= 0)  0 else interceptorNames.size - removes
+            remaining shouldBe interceptorsRemaining.size
+
+            var context = stringPipeline.pipeline.getFirst()
+
+            var count =0
+            var nameMatches = ""
+            while(context != stringPipeline.pipeline.getTail()){
+                nameMatches += "${context.name} shouldBe ${interceptorsRemaining[count]}"
+                context.name shouldBe interceptorsRemaining[count++]
+                context = context.next
+                if(context != stringPipeline.pipeline.getTail()){
+                    nameMatches += " | "
+                }
+            }
+            logger.info("pipeline size: {} shouldBe {} :: names: {}",stringPipeline.pipeline.getSize(),remaining, nameMatches)
+
+
         }
     }
 })
