@@ -1,0 +1,38 @@
+apply plugin: "org.jlleitschuh.gradle.ktlint"
+apply plugin: 'kotlin'
+
+dependencies{
+    implementation libs.kotlin.coroutines_core
+    implementation libs.slf4j
+
+    testImplementation libs.logback
+    testImplementation libs.kotest.junit5
+    testImplementation libs.kotest.assertions
+    testImplementation libs.kotest.property
+
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = jvmTargetVersion
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+test {
+    useJUnitPlatform()
+}
+
+
+detekt {
+    input = files("src/main/kotlin")
+    parallel = true
+    ignoreFailures = true
+    config = files("config/detekt/detekt-config.yml")
+    reports {
+        html {
+            enabled = true
+        }
+        xml {enabled = false}
+        txt {enabled = false}
+    }
+}

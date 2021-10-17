@@ -1,72 +1,41 @@
-plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.3.31'
-    id 'groovy'
-    id 'idea'
-    id 'application'
-    id "io.gitlab.arturbosch.detekt" version "1.0.0-RC16"
-}
+buildscript {
+    apply from: "dependencies.gradle"
 
-group 'pinpak'
-version '0.1'
-
-sourceCompatibility = 1.8
-
-description="Pipeline / Interceptor Pattern Kotlin"
-
-repositories {
-    jcenter()
-}
-
-configurations {
-    ktlint
-}
-
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation 'org.codehaus.groovy:groovy-all:2.5.5'
-    implementation 'org.slf4j:slf4j-api:1.7.25'
-    implementation 'ch.qos.logback:logback-classic:1.2.3'
-
-    testImplementation 'org.spockframework:spock-core:1.2-groovy-2.5'
-    testImplementation 'junit:junit:4.12'
-
-    ktlint "com.pinterest:ktlint:0.33.0"
-    //detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.0.0-RC16"
-}
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-mainClassName="pinpak.MainKt"
-
-task ktlint(type: JavaExec, group: "verification") {
-    description = "Check Kotlin code style."
-    classpath = configurations.ktlint
-    main = "com.pinterest.ktlint.Main"
-    args "src/**/*.kt"
-}
-check.dependsOn ktlint
-
-task ktlintFormat(type: JavaExec, group: "formatting") {
-    description = "Fix Kotlin code style deviations."
-    classpath += files("config/ktlint")
-    classpath = configurations.ktlint
-    main = "com.pinterest.ktlint.Main"
-    args "-F", "src/**/*.kt"
-}
-
-detekt {
-    input = files("src/main/kotlin")
-    config = files("config/detekt/yaml/pinpak-detekt-config.yml")
-
-    reports {
-        html {
-            enabled = true
-            destination = file("build/detekt/reports/report.html")
-        }
+    repositories {
+        mavenCentral()
     }
+
+    dependencies {
+        classpath buildPlugins.kotlin
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion"
+    id "io.gitlab.arturbosch.detekt" version "$detektVersion"
+    id "org.jlleitschuh.gradle.ktlint" version "$ktlintGradleVersion"
+}
+
+allprojects {
+    apply plugin: 'kotlin'
+    apply plugin: 'idea'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation libs.kotlin.stdlib_jdk8
+    }
+
+    compileKotlin {
+        kotlinOptions.jvmTarget = jvmTargetVersion
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+}
+
+wrapper {
+    gradleVersion = '7.1.1'
 }
