@@ -1,6 +1,4 @@
 rootProject.name = 'pinpak-parent'
 
 include ':pinpak'
-include ':examples:deliveryHandler'
-include ':examples:ejectionHandler'
-include ':examples:manyInterceptors'
+include ':examples:deliveryHandler', ':examples:ejectionHandler', ':examples:manyInterceptors'

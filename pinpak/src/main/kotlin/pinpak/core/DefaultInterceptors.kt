@@ -13,14 +13,10 @@ abstract class AbstractInterceptor<I> : BaseInterceptor {
     override lateinit var name: String
     override fun readData0(context: BaseContext, data: Any) {
         try {
-            @Suppress("UNCHECKED_CAST")
+              @Suppress("UNCHECKED_CAST")
             readData(context, data as I)
         } catch (e: Exception) {
-            if (context.next != context.pipeline.tail) {
-                context.pumpData(data)
-            } else {
-                context.pumpException(data, e)
-            }
+            context.previous.pumpException(data, e)
         }
     }
 

@@ -14,7 +14,10 @@ fun main(){
             println("$name delivered $data")
         })
 
+        config.addInterceptorLast("zero", PassThroughStringInterceptor())
         config.addInterceptorLast("one", PassThroughIntegerInterceptor())
+        config.addInterceptorLast("two", PassThroughIntegerInterceptor())
+
     }
 
     pipeline.injectData("Will cause Exception")

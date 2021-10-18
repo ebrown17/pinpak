@@ -4,7 +4,9 @@ abstract class BaseContext internal constructor(val name: String, val pipeline: 
     var next: BaseContext = this
     var previous: BaseContext = this
     abstract fun pumpData(data: Any)
-    abstract fun pumpException(data: Any, error: Throwable)
+    fun pumpException(data: Any, error: Throwable) {
+        pipeline.eject(name,data, error)
+    }
 }
 
 @Suppress("TooGenericExceptionCaught")
@@ -16,10 +18,6 @@ internal class HeadContext internal constructor(name: String, pipeline: Abstract
         } catch (e: Exception) {
             pumpException(data, e)
         }
-    }
-
-    override fun pumpException(data: Any, error: Throwable) {
-        next.pumpException(data, error)
     }
 }
 
@@ -33,10 +31,6 @@ internal class TailContext internal constructor(name: String, pipeline: Abstract
         } catch (e: Exception) {
             pumpException(data, e)
         }
-    }
-
-    override fun pumpException(data: Any, error: Throwable) {
-        pipeline.eject(name, data, error)
     }
 }
 
@@ -56,7 +50,4 @@ class InterceptorContext(
         }
     }
 
-    override fun pumpException(data: Any, error: Throwable) {
-        next.pumpException(data, error)
-    }
 }
